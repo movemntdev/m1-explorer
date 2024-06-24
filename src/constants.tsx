@@ -7,11 +7,11 @@ export const devnetUrl =
 
 export const networks = {
   mainnet: "https://aptos.movementlabs.xyz",
-  testnet: "https://aptos.testnet.movementlabs.xyz",
+  testnet: "https://aptos.devnet.m1.movementlabs.xyz",
   devnet: devnetUrl,
   local: "http://127.0.0.1:8080/v1",
-  previewnet: "https://aptos.testnet.movementlabs.xyz",
-  randomnet: "https://aptos.testnet.movementlabs.xyz",
+  previewnet: "https://aptos.devnet.m1.movementlabs.xyz",
+  randomnet: "https://aptos.devnet.m1.movementlabs.xyz",
 };
 
 export type NetworkName = keyof typeof networks;
