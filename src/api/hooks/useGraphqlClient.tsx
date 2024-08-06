@@ -36,7 +36,7 @@ export function getGraphqlURI(networkName: NetworkName): string | undefined {
         `https://${prefix}aptos.devnet.suzuka.movementlabs.xyz/graphql`
       );
     case "local":
-      return import.meta.env.LOCAL_GRAPHQL || "http://0.0.0.0:30731/graphql";
+      return "http://0.0.0.0:30730";
     case "mevmdevnet":
       return (
         import.meta.env.IMOLA_GRAPHQL ||
