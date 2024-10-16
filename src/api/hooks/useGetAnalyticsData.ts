@@ -3,7 +3,7 @@ import {defaultNetworkName} from "../../constants";
 import {useGlobalState} from "../../global-config/GlobalConfig";
 
 export const ANALYTICS_DATA_URL =
-  "https://storage.googleapis.com/explorer_stats/chain_stats_suzuka_v2.json";
+  "https://storage.googleapis.com/explorer_stats/chain_stats_porto_v2.json";
 
 export type AnalyticsData = {
   daily_active_users: DailyActiveUserData[];

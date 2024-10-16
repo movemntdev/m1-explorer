@@ -58,7 +58,7 @@ function NetworkAndChainIdCached({
       paddingY={0.75}
     >
       <Typography>
-        {networkName === "testnet" ? "suzuka testnet" : networkName}
+        {networkName === "testnet" ? "porto testnet" : networkName}
       </Typography>
       <Typography variant="body2" sx={{color: theme.palette.text.disabled}}>
         {chainId}
@@ -141,7 +141,7 @@ export default function NetworkSelect() {
           onChange={handleChange}
           renderValue={(value) => (
             <Typography>
-              {value === "testnet" ? "suzuka testnet" : value}
+              {value === "testnet" ? "porto testnet" : value}
             </Typography>
           )}
           onClose={() => {

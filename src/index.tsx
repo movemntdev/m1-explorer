@@ -21,9 +21,9 @@ initGTM({
 ReactGA.initialize(import.meta.env.GA_TRACKING_ID || "G-VS7KJG61TM");
 
 // TODO: redirect to the new explorer domain on the domain host
-// if (window.location.origin.includes("explorer.testnet.suzuka.movementlabs.xyz")) {
+// if (window.location.origin.includes("explorer.testnet.porto.movementlabs.xyz")) {
 //   const new_location = window.location.href.replace(
-//     "explorer.testnet.suzuka.movementlabs.xyz",
+//     "explorer.testnet.porto.movementlabs.xyz",
 //     "explorer.movementlabs.xyz",
 //   );
 //   window.location.replace(new_location);

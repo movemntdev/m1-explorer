@@ -28,12 +28,12 @@ export function getGraphqlURI(networkName: NetworkName): string | undefined {
     // case "testnet":
     //   return (
     //     import.meta.env.TESTNET_GRAPHQL ||
-    //     `https://${prefix}aptos.testnet.suzuka.movementlabs.xyz/graphql`
+    //     `https://${prefix}aptos.testnet.porto.movementlabs.xyz/graphql`
     //   );
     case "devnet":
       return (
         import.meta.env.DEVNET_GRAPHQL ||
-        `https://${prefix}aptos.devnet.suzuka.movementlabs.xyz/graphql`
+        `https://${prefix}aptos.devnet.porto.movementlabs.xyz/graphql`
       );
     case "local":
       return import.meta.env.LOCAL_GRAPHQL || "http://0.0.0.0:30731/graphql";
