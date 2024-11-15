@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React, {useRef, useState} from "react";
 import Toolbar from "@mui/material/Toolbar";
 import MuiAppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
@@ -14,6 +14,10 @@ import LogoIconB from "../../assets/svg/logo_txt_b.svg?react";
 import IconLight from "../../assets/svg/icon_light.svg?react";
 // @ts-expect-error logo
 import IconDark from "../../assets/svg/icon_dark.svg?react";
+// @ts-expect-error logo
+import IconBell from "../../assets/svg/icon_bell.svg?react";
+// @ts-expect-error logo
+import IconBellLight from "../../assets/svg/icon_bell_light.svg?react";
 
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -25,13 +29,85 @@ import FeatureBar from "./FeatureBar";
 // import {WalletConnector} from "@aptos-labs/wallet-adapter-mui-design";
 import {WalletConnector} from "../../components/WalletConnector";
 import {useGlobalState} from "../../global-config/GlobalConfig";
-import {useWallet} from "@aptos-labs/wallet-adapter-react";
+import {SignMessageResponse, useWallet} from "@aptos-labs/wallet-adapter-react";
 import {sendToGTM} from "../../api/hooks/useGoogleTagManager";
 import {Link, useNavigate} from "../../routing";
 import {useLogEventWithBasic} from "../Account/hooks/useLogEventWithBasic";
 import {sortPetraFirst} from "../../utils";
+import {Stack} from "@mui/system";
+import {
+  NotifiCardModal,
+  NotifiCardModalProps,
+  NotifiContextProvider,
+} from "@notifi-network/notifi-react";
+import "@notifi-network/notifi-react/dist/index.css";
+import "./notifiCustomStyles.css";
+import {Signature} from "@aptos-labs/ts-sdk";
+
+function getHexSignatureFromSignMessageResponse(
+  signMessageResponse: SignMessageResponse,
+): string {
+  // Handle weird edge case where its wrapped (seems to happen in Martian Wallet & Pontem...
+  const unwrappedResult = (
+    "result" in signMessageResponse
+      ? signMessageResponse.result
+      : signMessageResponse
+  ) as SignMessageResponse;
+  // Handle Uint8Array directly
+  if (unwrappedResult.signature instanceof Uint8Array) {
+    return Buffer.from(unwrappedResult.signature).toString("hex");
+  }
+  // Handle signature embedded as signature.data.data
+
+  if (
+    unwrappedResult.signature &&
+    // @ts-expect-error - Suppress type-checking for nested `data.data` property
+    unwrappedResult.signature.data &&
+    // @ts-expect-error - Suppress type-checking for nested `data.data` property
+    unwrappedResult.signature.data.data instanceof Uint8Array
+  ) {
+    // @ts-expect-error - Suppress type-checking for nested `data.data` property
+    return Buffer.from(unwrappedResult.signature.data.data).toString("hex");
+  }
+  // Handle signature as a string
+  if (typeof unwrappedResult.signature === "string") {
+    return unwrappedResult.signature;
+  }
+  // Handle signature as an instance of Signature
+  if (unwrappedResult.signature instanceof Signature) {
+    return (
+      "0x" +
+      Buffer.from(unwrappedResult.signature.toUint8Array()).toString("hex")
+    );
+  }
+  // Handle unexpected signature types
+  throw new Error("Unknown signature type");
+}
 
 export default function Header() {
+  const customCopy: NotifiCardModalProps["copy"] = {
+    Ftu: {
+      FtuTargetEdit: {
+        TargetInputs: {
+          inputSeparators: {
+            email: "OR",
+            telegram: "OR",
+          },
+        },
+      },
+    },
+    Inbox: {
+      InboxConfigTargetEdit: {
+        TargetInputs: {
+          inputSeparators: {
+            email: "OR",
+            telegram: "OR",
+          },
+        },
+      },
+    },
+  };
+
   const scrollTop = () => {
     const docElement = document.documentElement;
     const windowTop =
@@ -46,6 +122,7 @@ export default function Header() {
     }
   };
 
+  const [isNotifiPopupVisible, setIsNotifiPopupVisible] = useState(false);
   const {toggleColorMode} = useColorMode();
   const theme = useTheme();
   const logEvent = useLogEventWithBasic();
@@ -58,7 +135,7 @@ export default function Header() {
 
   const isOnMobile = !useMediaQuery(theme.breakpoints.up("md"));
   const [state] = useGlobalState();
-  const {account, wallet, network} = useWallet();
+  const {account, wallet, network, connected, signMessage} = useWallet();
   const navigate = useNavigate();
   const walletAddressRef = useRef("");
 
@@ -77,6 +154,10 @@ export default function Header() {
     });
     walletAddressRef.current = account.address;
   }
+
+  const customClassName: NotifiCardModalProps["classNames"] = {
+    container: "notifi-card-modal",
+  };
 
   return (
     <>
@@ -156,10 +237,75 @@ export default function Header() {
             >
               {theme.palette.mode === "light" ? <IconLight /> : <IconDark />}
             </Button>
+
+            {connected && account && account.publicKey && account?.address && (
+              <NotifiContextProvider
+                tenantId="bvjlmbbuaw3h49a3fj7s"
+                env="Development"
+                cardId="019301e23e3d75a69fcc1da0853bd0e5"
+                signMessage={async (message, nonce) => {
+                  const signMessageResult = await signMessage({
+                    message: message as string,
+                    nonce: nonce.toString(),
+                    address: true,
+                  });
+                  const signatureHex =
+                    getHexSignatureFromSignMessageResponse(signMessageResult);
+                  return signatureHex;
+                }}
+                walletBlockchain="MOVEMENT"
+                walletPublicKey={account?.publicKey as string}
+                accountAddress={account?.address}
+              >
+                <Box sx={{position: "relative"}}>
+                  <Button
+                    sx={{
+                      width: "40px",
+                      height: "40px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyItems: "center",
+                      padding: "0",
+                      minWidth: "30px",
+                      marginLeft: "1rem",
+                      color: "inherit",
+                      "&:hover": {background: "transparent", opacity: "0.8"},
+                      border: `1px solid ${theme.palette.mode !== "light" ? "#282B2A" : "#E5E4E8"}`,
+                    }}
+                    onClick={() => setIsNotifiPopupVisible((preVal) => !preVal)}
+                  >
+                    {theme.palette.mode === "light" ? (
+                      <IconBellLight />
+                    ) : (
+                      <IconBell />
+                    )}
+                  </Button>
+                  {isNotifiPopupVisible && (
+                    <Stack
+                      sx={{
+                        width: "351px",
+                        position: "absolute",
+                        top: "50px",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        zIndex: 1,
+                        borderWidth: "1px",
+                        border: "2px solid #282B2A",
+                      }}
+                    >
+                      <NotifiCardModal
+                        copy={customCopy}
+                        darkMode={theme.palette.mode === "light" ? false : true}
+                        classNames={customClassName}
+                      />
+                    </Stack>
+                  )}
+                </Box>
+              </NotifiContextProvider>
+            )}
             <NavMobile />
             {!isOnMobile && (
               <Box sx={{marginLeft: "1rem"}}>
-
                 <WalletConnector
                   networkSupport={state.network_name}
                   handleNavigate={() =>
