@@ -287,7 +287,7 @@ export default function Header() {
                         position: "absolute",
                         top: "50px",
                         left: "50%",
-                        transform: "translateX(-50%)",
+                        transform: "translateX(calc(-50% + 10px))",
                         zIndex: 1,
                         borderWidth: "1px",
                         border: "2px solid #282B2A",
