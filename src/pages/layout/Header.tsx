@@ -44,41 +44,43 @@ import "@notifi-network/notifi-react/dist/index.css";
 import "./notifiCustomStyles.css";
 import {Signature} from "@aptos-labs/ts-sdk";
 
-function getHexSignatureFromSignMessageResponse(
+function unwrapSignMessageResponse(
   signMessageResponse: SignMessageResponse,
-): string {
-  // Handle weird edge case where its wrapped (seems to happen in Martian Wallet & Pontem...
-  const unwrappedResult = (
+): SignMessageResponse {
+  // Handle weird edge case where its wrapped (seems to happen in Martian Wallet & Pontem..
+  return (
     "result" in signMessageResponse
       ? signMessageResponse.result
       : signMessageResponse
   ) as SignMessageResponse;
+}
+
+function getHexSignatureFromSignMessageResponse(
+  signMessageResponse: SignMessageResponse,
+): `0x${string}` {
   // Handle Uint8Array directly
-  if (unwrappedResult.signature instanceof Uint8Array) {
-    return Buffer.from(unwrappedResult.signature).toString("hex");
+  if (signMessageResponse.signature instanceof Uint8Array) {
+    return `0x${Buffer.from(signMessageResponse.signature).toString("hex")}`;
   }
   // Handle signature embedded as signature.data.data
 
   if (
-    unwrappedResult.signature &&
+    signMessageResponse.signature &&
     // @ts-expect-error - Suppress type-checking for nested `data.data` property
-    unwrappedResult.signature.data &&
+    signMessageResponse.signature.data &&
     // @ts-expect-error - Suppress type-checking for nested `data.data` property
-    unwrappedResult.signature.data.data instanceof Uint8Array
+    signMessageResponse.signature.data.data instanceof Uint8Array
   ) {
     // @ts-expect-error - Suppress type-checking for nested `data.data` property
-    return Buffer.from(unwrappedResult.signature.data.data).toString("hex");
+    return `0x${Buffer.from(signMessageResponse.signature.data.data).toString("hex")}`;
   }
   // Handle signature as a string
-  if (typeof unwrappedResult.signature === "string") {
-    return unwrappedResult.signature;
+  if (typeof signMessageResponse.signature === "string") {
+    return signMessageResponse.signature as `0x${string}`;
   }
   // Handle signature as an instance of Signature
-  if (unwrappedResult.signature instanceof Signature) {
-    return (
-      "0x" +
-      Buffer.from(unwrappedResult.signature.toUint8Array()).toString("hex")
-    );
+  if (signMessageResponse.signature instanceof Signature) {
+    return `0x${Buffer.from(signMessageResponse.signature.toUint8Array()).toString("hex")}`;
   }
   // Handle unexpected signature types
   throw new Error("Unknown signature type");
@@ -249,9 +251,17 @@ export default function Header() {
                     nonce: nonce.toString(),
                     address: true,
                   });
-                  const signatureHex =
-                    getHexSignatureFromSignMessageResponse(signMessageResult);
-                  return signatureHex;
+
+                  const unwrappedSignMessageResult =
+                    unwrapSignMessageResponse(signMessageResult);
+                  const signatureHex = getHexSignatureFromSignMessageResponse(
+                    unwrappedSignMessageResult,
+                  );
+
+                  return {
+                    signatureHex,
+                    signedMessage: unwrappedSignMessageResult.fullMessage,
+                  };
                 }}
                 walletBlockchain="MOVEMENT"
                 walletPublicKey={account?.publicKey as string}
