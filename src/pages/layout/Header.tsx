@@ -242,10 +242,13 @@ export default function Header() {
 
             {connected && account && account.publicKey && account?.address && (
               <NotifiContextProvider
-                tenantId="bvjlmbbuaw3h49a3fj7s"
-                env="Development"
-                cardId="019301e23e3d75a69fcc1da0853bd0e5"
-                signMessage={async (message, nonce) => {
+                tenantId="fcxw5v9dwb6wf0sk2r9o"
+                env="Production"
+                cardId="0192b8c523e570469f51c88cb50410a4"
+                signMessage={async (
+                  message: string,
+                  nonce: {toString: () => any},
+                ) => {
                   const signMessageResult = await signMessage({
                     message: message as string,
                     nonce: nonce.toString(),

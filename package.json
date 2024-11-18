@@ -33,7 +33,7 @@
     "@mui/material": "^5.15.4",
     "@mui/system": "^5.15.4",
     "@mui/x-date-pickers": "^7.0.0",
-    "@notifi-network/notifi-react": "3.0.2-alpha.10+22a83924",
+    "@notifi-network/notifi-react": "3.0.2-alpha.10",
     "@okwallet/aptos-wallet-adapter": "^0.0.7",
     "@openblockhq/aptos-wallet-adapter": "^0.1.5",
     "@pontem/wallet-adapter-plugin": "^0.2.1",

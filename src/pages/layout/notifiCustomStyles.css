@@ -40,10 +40,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.9rem 0;
+  padding: 0.6rem 0;
   font-weight: 700;
   background-color: var(--notifi-target-cta-button-bg);
-  border-radius: 6px;
+  border-radius: 0;
   margin: 1rem 2rem;
   cursor: pointer;
   position: relative;
@@ -58,7 +58,6 @@
 .notifi-target-cta-button {
   background-color: var(--notifi-target-cta-button-bg);
   color: var(--notifi-target-cta-button-text);
-  padding: 0.5rem 1rem;
   text-align: center;
   cursor: pointer;
   border-radius: 0px;
@@ -69,18 +68,20 @@
   border: 2px solid var(--notifi-color-golden-yellow);
   text-transform: uppercase;
   font-weight: 500;
+  font-size: 14px;
 }
 
 .notifi-target-state-banner-verify-cta.history {
-  padding: 0.5rem;
   width: 4rem;
   background-color: var(--notifi-target-cta-button-bg);
   color: var(--notifi-target-cta-button-text);
-  border-radius: 6px;
+  border-radius: 0;
   justify-content: center;
-  font-size: 0.9rem;
+  align-items: center;
+  font-size: 14px;
   border: 2px solid var(--notifi-color-golden-yellow);
   text-transform: uppercase;
+  height: 29px;
 }
 
 .notifi-history-row-icon {
@@ -335,6 +336,78 @@
 
 .notifi-target-state-banner-verify-title.history {
   font-size: 14px;
+}
+
+.notifi-connect-button {
+  background-color: var(--notifi-connect-button);
+  color: var(--notifi-connect-button-text);
+  border-radius: 0;
+  padding: 0.6rem 0rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  align-items: center;
+  margin: 0.5rem 2rem 0rem 2rem;
+}
+
+.notifi-inbox-config-target-edit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0;
+  font-weight: 700;
+  color: var(--notifi-ftu-button-text);
+  background-color: var(--notifi-ftu-button);
+  border-radius: 0;
+  margin: 1rem 2rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.notifi-ftu-target-edit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0;
+  width: 100%;
+  font-weight: 700;
+  color: var(--notifi-ftu-button-text);
+  background-color: var(--notifi-ftu-button);
+  border-radius: 0;
+  cursor: pointer;
+  position: relative;
+}
+
+.notifi-ftu-target-list-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0;
+  width: 100%;
+  font-weight: 700;
+  color: var(--notifi-ftu-button-text);
+  background-color: var(--notifi-ftu-button);
+  border-radius: 0;
+  cursor: pointer;
+  position: relative;
+}
+
+.notifi-ftu-alert-edit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0;
+  width: 100%;
+  font-weight: 700;
+  color: var(--notifi-ftu-button-text);
+  background-color: var(--notifi-ftu-button);
+  border-radius: 0;
+  cursor: pointer;
+  position: relative;
 }
 
 .notifi-theme-dark {
