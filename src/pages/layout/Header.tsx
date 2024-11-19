@@ -314,58 +314,64 @@ export default function Header() {
                 </Stack>
               )}
 
-              {connected && (
-                <NotifiContextProvider
-                  tenantId="fcxw5v9dwb6wf0sk2r9o"
-                  env="Production"
-                  cardId="0192b8c523e570469f51c88cb50410a4"
-                  signMessage={async (
-                    message: string,
-                    nonce: {toString: () => any},
-                  ) => {
-                    const signMessageResult = await signMessage({
-                      message: message as string,
-                      nonce: nonce.toString(),
-                      address: true,
-                    });
+              {connected &&
+                account &&
+                account?.publicKey &&
+                account?.address && (
+                  <NotifiContextProvider
+                    tenantId="fcxw5v9dwb6wf0sk2r9o"
+                    env="Production"
+                    cardId="0192b8c523e570469f51c88cb50410a4"
+                    signMessage={async (
+                      message: string,
+                      nonce: {toString: () => any},
+                    ) => {
+                      const signMessageResult = await signMessage({
+                        message: message as string,
+                        nonce: nonce.toString(),
+                        address: true,
+                      });
 
-                    const unwrappedSignMessageResult =
-                      unwrapSignMessageResponse(signMessageResult);
-                    const signatureHex = getHexSignatureFromSignMessageResponse(
-                      unwrappedSignMessageResult,
-                    );
+                      const unwrappedSignMessageResult =
+                        unwrapSignMessageResponse(signMessageResult);
+                      const signatureHex =
+                        getHexSignatureFromSignMessageResponse(
+                          unwrappedSignMessageResult,
+                        );
 
-                    return {
-                      signatureHex,
-                      signedMessage: unwrappedSignMessageResult.fullMessage,
-                    };
-                  }}
-                  walletBlockchain="MOVEMENT"
-                  walletPublicKey={account?.publicKey as string}
-                  accountAddress={account?.address}
-                >
-                  {isNotifiPopupVisible && (
-                    <Stack
-                      sx={{
-                        width: "351px",
-                        position: "absolute",
-                        top: "50px",
-                        left: "50%",
-                        transform: "translateX(calc(-50% + 10px))",
-                        zIndex: 1,
-                        borderWidth: "1px",
-                        border: "2px solid #282B2A",
-                      }}
-                    >
-                      <NotifiCardModal
-                        copy={customCopy}
-                        darkMode={theme.palette.mode === "light" ? false : true}
-                        classNames={customClassName}
-                      />
-                    </Stack>
-                  )}
-                </NotifiContextProvider>
-              )}
+                      return {
+                        signatureHex,
+                        signedMessage: unwrappedSignMessageResult.fullMessage,
+                      };
+                    }}
+                    walletBlockchain="MOVEMENT"
+                    walletPublicKey={account?.publicKey as string}
+                    accountAddress={account?.address}
+                  >
+                    {isNotifiPopupVisible && (
+                      <Stack
+                        sx={{
+                          width: "351px",
+                          position: "absolute",
+                          top: "50px",
+                          left: "50%",
+                          transform: "translateX(calc(-50% + 10px))",
+                          zIndex: 1,
+                          borderWidth: "1px",
+                          border: "2px solid #282B2A",
+                        }}
+                      >
+                        <NotifiCardModal
+                          copy={customCopy}
+                          darkMode={
+                            theme.palette.mode === "light" ? false : true
+                          }
+                          classNames={customClassName}
+                        />
+                      </Stack>
+                    )}
+                  </NotifiContextProvider>
+                )}
             </Box>
 
             <NavMobile />
