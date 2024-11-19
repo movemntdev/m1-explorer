@@ -4,7 +4,7 @@ import MuiAppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
 import NetworkSelect from "./NetworkSelect";
 import {useColorMode} from "../../context";
-import {useMediaQuery, useTheme} from "@mui/material";
+import {useMediaQuery, useTheme, Typography} from "@mui/material";
 
 // @ts-expect-error logo
 import LogoIconW from "../../assets/svg/logo_txt_w.svg?react";
@@ -18,6 +18,12 @@ import IconDark from "../../assets/svg/icon_dark.svg?react";
 import IconBell from "../../assets/svg/icon_bell.svg?react";
 // @ts-expect-error logo
 import IconBellLight from "../../assets/svg/icon_bell_light.svg?react";
+// @ts-expect-error logo
+import IconWallet from "../../assets/svg/icn-wallet.svg?react";
+// @ts-expect-error logo
+import IconNotifi from "../../assets/svg/notifi-icon.svg?react";
+// @ts-expect-error logo
+import IconNotifiDark from "../../assets/svg/notifi-icon-dark.svg?react";
 
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -240,59 +246,104 @@ export default function Header() {
               {theme.palette.mode === "light" ? <IconLight /> : <IconDark />}
             </Button>
 
-            {connected && account && account.publicKey && account?.address && (
-              <NotifiContextProvider
-                tenantId="fcxw5v9dwb6wf0sk2r9o"
-                env="Production"
-                cardId="0192b8c523e570469f51c88cb50410a4"
-                signMessage={async (
-                  message: string,
-                  nonce: {toString: () => any},
-                ) => {
-                  const signMessageResult = await signMessage({
-                    message: message as string,
-                    nonce: nonce.toString(),
-                    address: true,
-                  });
-
-                  const unwrappedSignMessageResult =
-                    unwrapSignMessageResponse(signMessageResult);
-                  const signatureHex = getHexSignatureFromSignMessageResponse(
-                    unwrappedSignMessageResult,
-                  );
-
-                  return {
-                    signatureHex,
-                    signedMessage: unwrappedSignMessageResult.fullMessage,
-                  };
+            <Box sx={{position: "relative"}}>
+              <Button
+                sx={{
+                  width: "40px",
+                  height: "40px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyItems: "center",
+                  padding: "0",
+                  minWidth: "30px",
+                  marginLeft: "1rem",
+                  color: "inherit",
+                  "&:hover": {background: "transparent", opacity: "0.8"},
+                  border: `1px solid ${theme.palette.mode !== "light" ? "#282B2A" : "#E5E4E8"}`,
                 }}
-                walletBlockchain="MOVEMENT"
-                walletPublicKey={account?.publicKey as string}
-                accountAddress={account?.address}
+                onClick={() => setIsNotifiPopupVisible((preVal) => !preVal)}
               >
-                <Box sx={{position: "relative"}}>
-                  <Button
+                {theme.palette.mode === "light" ? (
+                  <IconBellLight />
+                ) : (
+                  <IconBell />
+                )}
+              </Button>
+
+              {!connected && isNotifiPopupVisible && (
+                <Stack
+                  sx={{
+                    width: "351px",
+                    position: "absolute",
+                    top: "50px",
+                    left: "50%",
+                    transform: "translateX(calc(-50% + 10px))",
+                    zIndex: 1,
+                    borderWidth: "1px",
+                    border: "2px solid #282B2A",
+                  }}
+                >
+                  <Stack
                     sx={{
-                      width: "40px",
-                      height: "40px",
-                      display: "flex",
+                      width: "348px",
+                      height: "446px",
+                      backgroundColor:
+                        theme.palette.mode !== "light" ? "#141715" : "#ffffff",
+                      justifyContent: "center",
                       alignItems: "center",
-                      justifyItems: "center",
-                      padding: "0",
-                      minWidth: "30px",
-                      marginLeft: "1rem",
-                      color: "inherit",
-                      "&:hover": {background: "transparent", opacity: "0.8"},
-                      border: `1px solid ${theme.palette.mode !== "light" ? "#282B2A" : "#E5E4E8"}`,
                     }}
-                    onClick={() => setIsNotifiPopupVisible((preVal) => !preVal)}
                   >
-                    {theme.palette.mode === "light" ? (
-                      <IconBellLight />
-                    ) : (
-                      <IconBell />
-                    )}
-                  </Button>
+                    <Box sx={{mt: "auto"}}>
+                      <IconWallet />
+                    </Box>
+                    <Typography
+                      sx={{width: "210px"}}
+                      fontSize={"16px"}
+                      textAlign={"center"}
+                    >
+                      Connect your wallet to use notifications
+                    </Typography>
+                    <Box sx={{mt: "auto", mb: 4}}>
+                      {theme.palette.mode === "light" ? (
+                        <IconNotifiDark />
+                      ) : (
+                        <IconNotifi />
+                      )}
+                    </Box>
+                  </Stack>
+                </Stack>
+              )}
+
+              {connected && (
+                <NotifiContextProvider
+                  tenantId="fcxw5v9dwb6wf0sk2r9o"
+                  env="Production"
+                  cardId="0192b8c523e570469f51c88cb50410a4"
+                  signMessage={async (
+                    message: string,
+                    nonce: {toString: () => any},
+                  ) => {
+                    const signMessageResult = await signMessage({
+                      message: message as string,
+                      nonce: nonce.toString(),
+                      address: true,
+                    });
+
+                    const unwrappedSignMessageResult =
+                      unwrapSignMessageResponse(signMessageResult);
+                    const signatureHex = getHexSignatureFromSignMessageResponse(
+                      unwrappedSignMessageResult,
+                    );
+
+                    return {
+                      signatureHex,
+                      signedMessage: unwrappedSignMessageResult.fullMessage,
+                    };
+                  }}
+                  walletBlockchain="MOVEMENT"
+                  walletPublicKey={account?.publicKey as string}
+                  accountAddress={account?.address}
+                >
                   {isNotifiPopupVisible && (
                     <Stack
                       sx={{
@@ -313,9 +364,10 @@ export default function Header() {
                       />
                     </Stack>
                   )}
-                </Box>
-              </NotifiContextProvider>
-            )}
+                </NotifiContextProvider>
+              )}
+            </Box>
+
             <NavMobile />
             {!isOnMobile && (
               <Box sx={{marginLeft: "1rem"}}>
