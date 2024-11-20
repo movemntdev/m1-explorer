@@ -273,14 +273,16 @@ export default function Header() {
               {!connected && isNotifiPopupVisible && (
                 <Stack
                   sx={{
+                    borderRadius: "8px",
                     width: "351px",
                     position: "absolute",
                     top: "50px",
                     left: "50%",
                     transform: "translateX(calc(-50% + 10px))",
                     zIndex: 1,
-                    borderWidth: "1px",
                     border: "2px solid #282B2A",
+                    backgroundClip: "padding-box",
+                    overflow: "hidden",
                   }}
                 >
                   <Stack
