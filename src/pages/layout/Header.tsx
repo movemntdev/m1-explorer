@@ -1,10 +1,10 @@
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Toolbar from "@mui/material/Toolbar";
 import MuiAppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
 import NetworkSelect from "./NetworkSelect";
 import {useColorMode} from "../../context";
-import {useMediaQuery, useTheme, Typography} from "@mui/material";
+import {useMediaQuery, useTheme} from "@mui/material";
 
 // @ts-expect-error logo
 import LogoIconW from "../../assets/svg/logo_txt_w.svg?react";
@@ -18,12 +18,6 @@ import IconDark from "../../assets/svg/icon_dark.svg?react";
 import IconBell from "../../assets/svg/icon_bell.svg?react";
 // @ts-expect-error logo
 import IconBellLight from "../../assets/svg/icon_bell_light.svg?react";
-// @ts-expect-error logo
-import IconWallet from "../../assets/svg/icn-wallet.svg?react";
-// @ts-expect-error logo
-import IconNotifi from "../../assets/svg/notifi-icon.svg?react";
-// @ts-expect-error logo
-import IconNotifiDark from "../../assets/svg/notifi-icon-dark.svg?react";
 
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -49,6 +43,78 @@ import {
 import "@notifi-network/notifi-react/dist/index.css";
 import "./notifiCustomStyles.css";
 import {Signature} from "@aptos-labs/ts-sdk";
+import Badge from "@mui/material/Badge";
+import {useNotifiHistoryContext} from "@notifi-network/notifi-react";
+
+interface BadgedBellIconProps {
+  connected: boolean; // Indicates if the wallet is connected
+  setIsNotifiPopupVisible: React.Dispatch<React.SetStateAction<boolean>>; // Function to toggle popup visibility
+  isNotifiPopupVisible: boolean; // State for popup visibility
+  setWalletConnectModalOpen: React.Dispatch<React.SetStateAction<boolean>>; // Function to open wallet modal
+}
+
+const BadgedBellIcon: React.FC<BadgedBellIconProps> = ({
+  connected,
+  setIsNotifiPopupVisible,
+  isNotifiPopupVisible,
+  setWalletConnectModalOpen,
+}) => {
+  const theme = useTheme();
+  const {unreadCount} = useNotifiHistoryContext();
+  return (
+    <Badge
+      badgeContent={unreadCount}
+      sx={{
+        "& .MuiBadge-badge": {
+          backgroundColor: "var(--notifi-color-primary)",
+          color: "var( --notifi-color-text)",
+        },
+      }}
+    >
+      <Button
+        sx={{
+          width: "40px",
+          height: "40px",
+          display: "flex",
+          alignItems: "center",
+          justifyItems: "center",
+          padding: "0",
+          minWidth: "30px",
+          marginLeft: "1rem",
+          color: "inherit",
+          "&:hover": {
+            border:
+              isNotifiPopupVisible && theme.palette.mode === "light"
+                ? "4px solid #A6A6A7"
+                : isNotifiPopupVisible && theme.palette.mode !== "light"
+                  ? "4px solid #635A2C"
+                  : !isNotifiPopupVisible && theme.palette.mode === "light"
+                    ? "2px solid #A6A6A7"
+                    : "2px solid #645B2D",
+            background: "transparent",
+          },
+          border: `${
+            isNotifiPopupVisible && theme.palette.mode === "light"
+              ? "4px solid #A6A6A7"
+              : isNotifiPopupVisible && theme.palette.mode !== "light"
+                ? "4px solid #635A2C"
+                : !isNotifiPopupVisible && theme.palette.mode === "light"
+                  ? "2px solid #E5E4E8"
+                  : "2px solid #282B2A"
+          }`,
+        }}
+        onClick={() => {
+          if (!connected) {
+            setWalletConnectModalOpen(true);
+          }
+          setIsNotifiPopupVisible((preVal) => !preVal);
+        }}
+      >
+        {theme.palette.mode === "light" ? <IconBellLight /> : <IconBell />}
+      </Button>
+    </Badge>
+  );
+};
 
 function unwrapSignMessageResponse(
   signMessageResponse: SignMessageResponse,
@@ -131,6 +197,7 @@ export default function Header() {
   };
 
   const [isNotifiPopupVisible, setIsNotifiPopupVisible] = useState(false);
+  const [walletConnectModalOpen, setWalletConnectModalOpen] = useState(false);
   const {toggleColorMode} = useColorMode();
   const theme = useTheme();
   const logEvent = useLogEventWithBasic();
@@ -140,12 +207,15 @@ export default function Header() {
     rootMargin: "-40px 0px 0px 0px",
     threshold: 0,
   });
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  const bellIconRef = useRef<HTMLDivElement | null>(null);
 
   const isOnMobile = !useMediaQuery(theme.breakpoints.up("md"));
   const [state] = useGlobalState();
   const {account, wallet, network, connected, signMessage} = useWallet();
   const navigate = useNavigate();
   const walletAddressRef = useRef("");
+  const notificationRequestedRef = useRef(false);
 
   if (account && walletAddressRef.current !== account.address) {
     logEvent("wallet_connected", account.address, {
@@ -166,6 +236,42 @@ export default function Header() {
   const customClassName: NotifiCardModalProps["classNames"] = {
     container: "notifi-card-modal",
   };
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    const target = event.target as Node;
+    if (
+      modalRef.current &&
+      !modalRef.current.contains(target) &&
+      bellIconRef.current &&
+      !bellIconRef.current.contains(target)
+    ) {
+      setIsNotifiPopupVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isNotifiPopupVisible) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    } else {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isNotifiPopupVisible]);
+
+  useEffect(() => {
+    if (
+      account?.publicKey &&
+      account?.address &&
+      notificationRequestedRef.current
+    ) {
+      setTimeout(() => {
+        setIsNotifiPopupVisible(true);
+        notificationRequestedRef.current = false;
+      }, 3000);
+    }
+  }, [account?.publicKey, account?.address]);
 
   return (
     <>
@@ -246,74 +352,56 @@ export default function Header() {
               {theme.palette.mode === "light" ? <IconLight /> : <IconDark />}
             </Button>
 
-            <Box sx={{position: "relative"}}>
-              <Button
-                sx={{
-                  width: "40px",
-                  height: "40px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyItems: "center",
-                  padding: "0",
-                  minWidth: "30px",
-                  marginLeft: "1rem",
-                  color: "inherit",
-                  "&:hover": {background: "transparent", opacity: "0.8"},
-                  border: `1px solid ${theme.palette.mode !== "light" ? "#282B2A" : "#E5E4E8"}`,
-                }}
-                onClick={() => setIsNotifiPopupVisible((preVal) => !preVal)}
-              >
-                {theme.palette.mode === "light" ? (
-                  <IconBellLight />
-                ) : (
-                  <IconBell />
-                )}
-              </Button>
-
-              {!connected && isNotifiPopupVisible && (
-                <Stack
+            <Box sx={{position: "relative"}} ref={bellIconRef}>
+              {!connected && (
+                <Button
                   sx={{
-                    borderRadius: "8px",
-                    width: "351px",
-                    position: "absolute",
-                    top: "50px",
-                    left: "50%",
-                    transform: "translateX(calc(-50% + 10px))",
-                    zIndex: 1,
-                    border: "2px solid #282B2A",
-                    backgroundClip: "padding-box",
-                    overflow: "hidden",
+                    width: "40px",
+                    height: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyItems: "center",
+                    padding: "0",
+                    minWidth: "30px",
+                    marginLeft: "1rem",
+                    color: "inherit",
+                    "&:hover": {
+                      border:
+                        isNotifiPopupVisible && theme.palette.mode === "light"
+                          ? `4px solid var(--notifi-color-gray)`
+                          : isNotifiPopupVisible &&
+                              theme.palette.mode !== "light"
+                            ? `4px solid var(--notifi-color-dark-gray)`
+                            : !isNotifiPopupVisible &&
+                                theme.palette.mode === "light"
+                              ? `2px solid var(--notifi-color-gray)`
+                              : `2px solid var(--notifi-color-border)`,
+                      background: "transparent",
+                    },
+                    border: `${
+                      isNotifiPopupVisible && theme.palette.mode === "light"
+                        ? `4px solid var(--notifi-color-gray)`
+                        : isNotifiPopupVisible && theme.palette.mode !== "light"
+                          ? `4px solid var(--notifi-color-dark-gray)`
+                          : !isNotifiPopupVisible &&
+                              theme.palette.mode === "light"
+                            ? `2px solid var(--notifi-color-light-stroke)`
+                            : `2px solid var(--notifi-color-dark-gray)`
+                    }`,
+                  }}
+                  onClick={() => {
+                    if (!connected) {
+                      setWalletConnectModalOpen(true);
+                      notificationRequestedRef.current = true;
+                    }
                   }}
                 >
-                  <Stack
-                    sx={{
-                      width: "348px",
-                      height: "446px",
-                      backgroundColor:
-                        theme.palette.mode !== "light" ? "#141715" : "#ffffff",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Box sx={{mt: "auto"}}>
-                      <IconWallet />
-                    </Box>
-                    <Typography
-                      sx={{width: "210px"}}
-                      fontSize={"16px"}
-                      textAlign={"center"}
-                    >
-                      Connect your wallet to use notifications
-                    </Typography>
-                    <Box sx={{mt: "auto", mb: 4}}>
-                      {theme.palette.mode === "light" ? (
-                        <IconNotifiDark />
-                      ) : (
-                        <IconNotifi />
-                      )}
-                    </Box>
-                  </Stack>
-                </Stack>
+                  {theme.palette.mode === "light" ? (
+                    <IconBellLight />
+                  ) : (
+                    <IconBell />
+                  )}
+                </Button>
               )}
 
               {connected &&
@@ -350,28 +438,37 @@ export default function Header() {
                     walletPublicKey={account?.publicKey as string}
                     accountAddress={account?.address}
                   >
-                    {isNotifiPopupVisible && (
-                      <Stack
-                        sx={{
-                          width: "351px",
-                          position: "absolute",
-                          top: "50px",
-                          left: "50%",
-                          transform: "translateX(calc(-50% + 10px))",
-                          zIndex: 1,
-                          borderWidth: "1px",
-                          border: "2px solid #282B2A",
-                        }}
-                      >
-                        <NotifiCardModal
-                          copy={customCopy}
-                          darkMode={
-                            theme.palette.mode === "light" ? false : true
-                          }
-                          classNames={customClassName}
-                        />
-                      </Stack>
-                    )}
+                    <>
+                      <BadgedBellIcon
+                        connected={connected}
+                        setIsNotifiPopupVisible={setIsNotifiPopupVisible}
+                        isNotifiPopupVisible={isNotifiPopupVisible}
+                        setWalletConnectModalOpen={setWalletConnectModalOpen}
+                      />
+                      {isNotifiPopupVisible && (
+                        <Stack
+                          sx={{
+                            width: "351px",
+                            position: "absolute",
+                            top: "50px",
+                            left: "50%",
+                            transform: "translateX(calc(-50% + 10px))",
+                            zIndex: 1,
+                            borderWidth: "1px",
+                            border: "2px solid #282B2A",
+                          }}
+                          ref={modalRef}
+                        >
+                          <NotifiCardModal
+                            copy={customCopy}
+                            darkMode={
+                              theme.palette.mode === "light" ? false : true
+                            }
+                            classNames={customClassName}
+                          />
+                        </Stack>
+                      )}
+                    </>
                   </NotifiContextProvider>
                 )}
             </Box>
@@ -387,6 +484,8 @@ export default function Header() {
                   sortDefaultWallets={sortPetraFirst}
                   sortMoreWallets={sortPetraFirst}
                   modalMaxWidth="sm"
+                  setWalletConnectModalOpen={setWalletConnectModalOpen}
+                  walletConnectModalOpen={walletConnectModalOpen}
                 />
               </Box>
             )}

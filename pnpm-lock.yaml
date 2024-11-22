@@ -69,8 +69,8 @@ importers:
         specifier: ^7.0.0
         version: 7.10.0(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@mui/material@5.16.4(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.3)(date-fns@3.6.0)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       "@notifi-network/notifi-react":
-        specifier: 3.0.2-alpha.10
-        version: 3.0.2-alpha.10(@types/react@18.3.3)(bufferutil@4.0.8)(graphql@16.9.0)(react@18.3.1)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.23.8)
+        specifier: ^3.1.0
+        version: 3.1.0(@types/react@18.3.3)(bufferutil@4.0.8)(graphql@16.9.0)(react@18.3.1)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.23.8)
       "@okwallet/aptos-wallet-adapter":
         specifier: ^0.0.7
         version: 0.0.7(@aptos-labs/wallet-adapter-core@4.10.0(@aptos-labs/ts-sdk@1.19.0)(@wallet-standard/core@1.0.3)(aptos@1.21.0))(aptos@1.21.0)
@@ -2103,22 +2103,22 @@ packages:
       }
     engines: {node: ">= 8"}
 
-  "@notifi-network/notifi-frontend-client@3.0.2-alpha.11":
+  "@notifi-network/notifi-frontend-client@3.1.0":
     resolution:
       {
-        integrity: sha512-SCRpOjJ6o1riYVhOIxtQKn5H4gKPzcrb5N7TaR1vrAlDp/PyqPzn+eYPXM62uKT1mXotvQgs+Q/B8243OH/ASg==,
+        integrity: sha512-YuXupjOuHYK1hJ3NzJ2H1B4uGHGJI+/fxJnMUNVZguy8KTmz9fE5QW1COPMjKvfTAGsITh7UUf3KyIsc3O2FpQ==,
       }
 
-  "@notifi-network/notifi-graphql@3.0.2-alpha.11":
+  "@notifi-network/notifi-graphql@3.1.0":
     resolution:
       {
-        integrity: sha512-Pon/+pralc0WsyzULH3k2kn6dXHC2d/uZTSgdLvWuhbfMhyqDWnKSyo+TMRScUicAJoCO0PIN6OSg+/YYW6uww==,
+        integrity: sha512-RhLfANRe9n1FMxTxAHh4hU99KJX5eXdAtpjrTvETrGYB2qX/vMoDo0r/Cv994NZBqO+lw9w91rw6E5IUbs37Ug==,
       }
 
-  "@notifi-network/notifi-react@3.0.2-alpha.10":
+  "@notifi-network/notifi-react@3.1.0":
     resolution:
       {
-        integrity: sha512-ihFVl7C7IhEOr62Jv9KLqU0M3aVPepaS8G0O8yHbII93YBENja/MURJr3CTVFGziUNnbvi8e7UIRCk2EH4H9Pg==,
+        integrity: sha512-aCesTM9CcjaSjPFuo+7wFNx/Clhe8Hf7r5gKKAhPoXuhi+YFvS/ATSoGRFPPcBzs64ebtY4SURzhD+2+dBsEdQ==,
       }
     engines: {node: ">=18"}
     peerDependencies:
@@ -9382,16 +9382,19 @@ snapshots:
       "@nodelib/fs.scandir": 2.1.5
       fastq: 1.17.1
 
-  "@notifi-network/notifi-frontend-client@3.0.2-alpha.11(graphql@16.9.0)":
+  "@notifi-network/notifi-frontend-client@3.1.0(bufferutil@4.0.8)(graphql@16.9.0)(utf-8-validate@5.0.10)":
     dependencies:
-      "@notifi-network/notifi-graphql": 3.0.2-alpha.11
+      "@notifi-network/notifi-graphql": 3.1.0
       graphql-request: 6.1.0(graphql@16.9.0)
       localforage: 1.10.0
+      ws: 8.18.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
+      - bufferutil
       - encoding
       - graphql
+      - utf-8-validate
 
-  "@notifi-network/notifi-graphql@3.0.2-alpha.11":
+  "@notifi-network/notifi-graphql@3.1.0":
     dependencies:
       graphql: 16.9.0
       graphql-request: 6.1.0(graphql@16.9.0)
@@ -9401,9 +9404,9 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  "@notifi-network/notifi-react@3.0.2-alpha.10(@types/react@18.3.3)(bufferutil@4.0.8)(graphql@16.9.0)(react@18.3.1)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.23.8)":
+  "@notifi-network/notifi-react@3.1.0(@types/react@18.3.3)(bufferutil@4.0.8)(graphql@16.9.0)(react@18.3.1)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.23.8)":
     dependencies:
-      "@notifi-network/notifi-frontend-client": 3.0.2-alpha.11(graphql@16.9.0)
+      "@notifi-network/notifi-frontend-client": 3.1.0(bufferutil@4.0.8)(graphql@16.9.0)(utf-8-validate@5.0.10)
       "@xmtp/consent-proof-signature": 0.1.3
       "@xmtp/content-type-reaction": 1.1.10
       "@xmtp/content-type-remote-attachment": 1.1.11
