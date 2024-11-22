@@ -50,14 +50,16 @@ interface BadgedBellIconProps {
   connected: boolean; // Indicates if the wallet is connected
   setIsNotifiPopupVisible: React.Dispatch<React.SetStateAction<boolean>>; // Function to toggle popup visibility
   isNotifiPopupVisible: boolean; // State for popup visibility
-  setWalletConnectModalOpen: React.Dispatch<React.SetStateAction<boolean>>; // Function to open wallet modal
+  toggleWalletConnectModalVisiblityRef: React.MutableRefObject<
+    (() => void) | null
+  >; // Function to open wallet modal
 }
 
 const BadgedBellIcon: React.FC<BadgedBellIconProps> = ({
   connected,
   setIsNotifiPopupVisible,
   isNotifiPopupVisible,
-  setWalletConnectModalOpen,
+  toggleWalletConnectModalVisiblityRef,
 }) => {
   const theme = useTheme();
   const {unreadCount} = useNotifiHistoryContext();
@@ -104,8 +106,8 @@ const BadgedBellIcon: React.FC<BadgedBellIconProps> = ({
           }`,
         }}
         onClick={() => {
-          if (!connected) {
-            setWalletConnectModalOpen(true);
+          if (!connected && toggleWalletConnectModalVisiblityRef.current) {
+            toggleWalletConnectModalVisiblityRef.current();
           }
           setIsNotifiPopupVisible((preVal) => !preVal);
         }}
@@ -197,7 +199,6 @@ export default function Header() {
   };
 
   const [isNotifiPopupVisible, setIsNotifiPopupVisible] = useState(false);
-  const [walletConnectModalOpen, setWalletConnectModalOpen] = useState(false);
   const {toggleColorMode} = useColorMode();
   const theme = useTheme();
   const logEvent = useLogEventWithBasic();
@@ -209,6 +210,9 @@ export default function Header() {
   });
   const modalRef = useRef<HTMLDivElement | null>(null);
   const bellIconRef = useRef<HTMLDivElement | null>(null);
+  const toggleWalletConnectModalVisiblityRef = useRef<(() => void) | null>(
+    null,
+  );
 
   const isOnMobile = !useMediaQuery(theme.breakpoints.up("md"));
   const [state] = useGlobalState();
@@ -390,8 +394,11 @@ export default function Header() {
                     }`,
                   }}
                   onClick={() => {
-                    if (!connected) {
-                      setWalletConnectModalOpen(true);
+                    if (
+                      !connected &&
+                      toggleWalletConnectModalVisiblityRef.current
+                    ) {
+                      toggleWalletConnectModalVisiblityRef.current();
                       notificationRequestedRef.current = true;
                     }
                   }}
@@ -443,7 +450,9 @@ export default function Header() {
                         connected={connected}
                         setIsNotifiPopupVisible={setIsNotifiPopupVisible}
                         isNotifiPopupVisible={isNotifiPopupVisible}
-                        setWalletConnectModalOpen={setWalletConnectModalOpen}
+                        toggleWalletConnectModalVisiblityRef={
+                          toggleWalletConnectModalVisiblityRef
+                        }
                       />
                       {isNotifiPopupVisible && (
                         <Stack
@@ -484,8 +493,9 @@ export default function Header() {
                   sortDefaultWallets={sortPetraFirst}
                   sortMoreWallets={sortPetraFirst}
                   modalMaxWidth="sm"
-                  setWalletConnectModalOpen={setWalletConnectModalOpen}
-                  walletConnectModalOpen={walletConnectModalOpen}
+                  toggleWalletConnectModalVisiblityRef={
+                    toggleWalletConnectModalVisiblityRef
+                  }
                 />
               </Box>
             )}

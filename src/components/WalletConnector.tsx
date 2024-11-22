@@ -2,6 +2,7 @@ import {AnyAptosWallet} from "@aptos-labs/wallet-adapter-react";
 import {Breakpoint} from "@mui/material";
 import WalletButton from "./WalletButton";
 import WalletsModal from "./WalletModal";
+import {useEffect, useState} from "react";
 
 export interface WalletConnectorProps {
   networkSupport?: string;
@@ -18,8 +19,9 @@ export interface WalletConnectorProps {
   sortMoreWallets?: (a: AnyAptosWallet, b: AnyAptosWallet) => number;
   /** The max width of the wallet selector modal. Defaults to `xs`. */
   modalMaxWidth?: Breakpoint;
-  setWalletConnectModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  walletConnectModalOpen: boolean;
+  toggleWalletConnectModalVisiblityRef?: React.MutableRefObject<
+    (() => void) | null
+  >;
 }
 
 export function WalletConnector({
@@ -28,11 +30,17 @@ export function WalletConnector({
   sortDefaultWallets,
   sortMoreWallets,
   modalMaxWidth,
-  setWalletConnectModalOpen,
-  walletConnectModalOpen,
+  toggleWalletConnectModalVisiblityRef,
 }: WalletConnectorProps) {
+  const [walletConnectModalOpen, setWalletConnectModalOpen] = useState(false);
   const handleModalOpen = () => setWalletConnectModalOpen(true);
   const handleClose = () => setWalletConnectModalOpen(false);
+
+  useEffect(() => {
+    if (toggleWalletConnectModalVisiblityRef) {
+      toggleWalletConnectModalVisiblityRef.current = handleModalOpen;
+    }
+  }, []);
 
   return (
     <>
