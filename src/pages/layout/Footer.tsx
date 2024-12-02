@@ -7,7 +7,7 @@ import GithubLogo from "../../assets/github.svg?react";
 // @ts-expect-error logo
 import DiscordLogo from "../../assets/discord.svg?react";
 // @ts-expect-error logo
-import TwitterLogo from "../../assets/twitter.svg?react";
+import XLogo from "../../assets/x.svg?react";
 // @ts-expect-error logo
 import MediumLogo from "../../assets/medium.svg?react";
 // @ts-expect-error logo
@@ -28,9 +28,9 @@ const socialLinks = [
     icon: DiscordLogo,
   },
   {
-    title: "Twitter",
-    url: "https://twitter.com/movementlabsxyz",
-    icon: TwitterLogo,
+    title: "X",
+    url: "https://X.com/movementlabsxyz",
+    icon: XLogo,
   },
   {
     title: "Medium",
