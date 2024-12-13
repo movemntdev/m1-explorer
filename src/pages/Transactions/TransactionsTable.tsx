@@ -94,7 +94,11 @@ function TransactionSenderCell({transaction}: TransactionCellProps) {
   }
 
   return (
-    <GeneralTableCell>
+    <GeneralTableCell
+      sx={{
+        "& a": {color: "#FFDA34"},
+      }}
+    >
       {sender && <HashButton hash={sender} type={HashType.ACCOUNT} />}
     </GeneralTableCell>
   );
@@ -105,7 +109,11 @@ function TransactionReceiverOrCounterPartyCell({
 }: TransactionCellProps) {
   const counterparty = getTransactionCounterparty(transaction);
   return (
-    <GeneralTableCell>
+    <GeneralTableCell
+      sx={{
+        "& a": {color: "#FFDA34"},
+      }}
+    >
       {counterparty && (
         <HashButton hash={counterparty.address} type={HashType.ACCOUNT} />
       )}
@@ -124,7 +132,7 @@ function TransactionFunctionCell({transaction}: TransactionCellProps) {
     >
       <TransactionFunction
         transaction={transaction}
-        sx={{maxWidth: {xs: 200, md: 300, lg: 400}}}
+        sx={{maxWidth: {xs: 200, md: 300, lg: 400, color: "#FFDA34"}}}
       />
     </GeneralTableCell>
   );
@@ -346,7 +354,7 @@ export function UserTransactionsTable({
   address,
 }: UserTransactionsTableProps) {
   return (
-    <Table>
+    <Table sx={{minWidth: 650}}>
       <TableHead>
         <TableRow>
           {columns.map((column) => (
