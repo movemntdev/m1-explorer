@@ -31,7 +31,7 @@ export default function StateCheckpointOverviewTab({
           value={<TransactionStatus success={transactionData.success} />}
           tooltip={getLearnMoreTooltip("status")}
         />
-        <TransactionBlockRow version={transactionData.version} />
+        <TransactionBlockRow version={transactionData.version} color="" />
         {"timestamp" in transactionData && (
           <ContentRow
             title="Timestamp:"

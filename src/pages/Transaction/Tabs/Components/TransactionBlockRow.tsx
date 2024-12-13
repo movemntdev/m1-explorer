@@ -9,7 +9,7 @@ export default function TransactionBlockRow({
   color,
 }: {
   version: string;
-  color: string;
+  color?: string;
 }) {
   const {data} = useGetBlockByVersion({version: parseInt(version)});
 
