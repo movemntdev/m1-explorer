@@ -52,6 +52,7 @@ function UserTransferOrInteractionRows({
                   backgroundColor: "#000000",
                   "& span": {color: "#FFD337 !important"},
                   "& button": {color: "#FFD337 !important"},
+                  borderRadius: "4px !important",
                 },
               }}
             >
@@ -84,6 +85,7 @@ function TransactionFunctionRow({
             },
             "& .MuiBox-root": {
               backgroundColor: "black !important",
+              borderRadius: "4px !important",
             },
           }}
         >
@@ -157,6 +159,7 @@ export default function UserTransactionOverviewTab({
                     color: "#FFD337 !important",
                     "& span": {color: "#FFD337 !important"},
                     "& button": {color: "#FFD337 !important"},
+                    borderRadius: "4px !important",
                     backgroundColor: "#000000",
                   },
                 }}

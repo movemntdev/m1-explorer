@@ -4,7 +4,6 @@ import React from "react";
 interface GradientBorderBoxProps extends BoxProps {
   children: React.ReactNode;
 }
-
 export default function GradientBorderBox({
   children,
   ...props
@@ -18,7 +17,7 @@ export default function GradientBorderBox({
           borderRadius: "16px",
           overflow: "hidden",
           background:
-            "linear-gradient(135deg, rgba(28, 28, 28, 0.95), rgba(18, 18, 18, 0.95))",
+            "linear-gradient(90deg, rgba(32, 31, 28, 0.98), rgba(45, 43, 36, 0.95))",
           margin: "1px",
         },
         "& .MuiGrid2-container": {
@@ -43,7 +42,8 @@ export default function GradientBorderBox({
           left: 0,
           borderRadius: "16px",
           padding: "1px",
-          backgroundColor: "#FFD337",
+          background:
+            "linear-gradient(90deg, #FFDA34 0%, rgba(255, 218, 52, 0) 49%, #FFDA34 100%)",
           maskImage:
             "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
           maskComposite: "exclude",
