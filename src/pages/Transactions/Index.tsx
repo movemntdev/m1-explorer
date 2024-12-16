@@ -72,8 +72,8 @@ export default function TransactionsPage() {
               </Button>
             )}
           </Stack>
-          {userTxnOnly ? <UserTransactions /> : <AllTransactions />}
         </Box>
+        {userTxnOnly ? <UserTransactions /> : <AllTransactions />}
       </Box>
     </Box>
   );

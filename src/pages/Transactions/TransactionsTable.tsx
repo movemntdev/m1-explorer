@@ -319,26 +319,53 @@ export default function TransactionsTable({
   columns = DEFAULT_COLUMNS,
 }: TransactionsTableProps) {
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          {columns.map((column) => (
-            <TransactionHeaderCell key={column} column={column} />
-          ))}
-        </TableRow>
-      </TableHead>
-      <GeneralTableBody>
-        {transactions.map((transaction, i) => {
-          return (
-            <TransactionRow
-              key={`${i}-${transaction.hash}`}
-              transaction={transaction}
-              columns={columns}
-            />
-          );
-        })}
-      </GeneralTableBody>
-    </Table>
+    <Box
+      sx={{
+        width: "86%",
+        margin: "0 auto",
+        overflowX: "auto",
+        "& .MuiTable-root": {
+          minWidth: "100%",
+          tableLayout: "fixed",
+        },
+        "& th:nth-of-type(2)": {
+          // Type column
+          width: "60px",
+          minWidth: "60px",
+          maxWidth: "60px",
+        },
+        "& th:nth-of-type(6)": {
+          // Function column
+          width: "30%",
+        },
+        "& td": {
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        },
+      }}
+    >
+      <Table>
+        <TableHead>
+          <TableRow>
+            {columns.map((column) => (
+              <TransactionHeaderCell key={column} column={column} />
+            ))}
+          </TableRow>
+        </TableHead>
+        <GeneralTableBody>
+          {transactions.map((transaction, i) => {
+            return (
+              <TransactionRow
+                key={`${i}-${transaction.hash}`}
+                transaction={transaction}
+                columns={columns}
+              />
+            );
+          })}
+        </GeneralTableBody>
+      </Table>
+    </Box>
   );
 }
 
