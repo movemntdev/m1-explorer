@@ -3,7 +3,7 @@ import Toolbar from "@mui/material/Toolbar";
 import MuiAppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
 import NetworkSelect from "./NetworkSelect";
-import {useColorMode} from "../../context";
+// import {useColorMode} from "../../context";
 import {useMediaQuery, useTheme} from "@mui/material";
 
 // @ts-expect-error logo
@@ -11,30 +11,25 @@ import LogoIconW from "../../assets/svg/logo_txt_w.svg?react";
 // @ts-expect-error logo
 import LogoIconB from "../../assets/svg/logo_txt_b.svg?react";
 // @ts-expect-error logo
-import IconLight from "../../assets/svg/icon_light.svg?react";
-// @ts-expect-error logo
-import IconDark from "../../assets/svg/icon_dark.svg?react";
-// @ts-expect-error logo
 import IconBell from "../../assets/svg/icon_bell.svg?react";
 // @ts-expect-error logo
 import IconBellLight from "../../assets/svg/icon_bell_light.svg?react";
 
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Nav from "./Nav";
 import NavMobile from "./NavMobile";
 import {grey} from "../../themes/colors/aptosColorPalette";
 import {useInView} from "react-intersection-observer";
 import FeatureBar from "./FeatureBar";
-// import {WalletConnector} from "@aptos-labs/wallet-adapter-mui-design";
 import {WalletConnector} from "../../components/WalletConnector";
 import {useGlobalState} from "../../global-config/GlobalConfig";
-import {SignMessageResponse, useWallet} from "@aptos-labs/wallet-adapter-react";
+import {useWallet, SignMessageResponse} from "@aptos-labs/wallet-adapter-react";
 import {sendToGTM} from "../../api/hooks/useGoogleTagManager";
 import {Link, useNavigate} from "../../routing";
 import {useLogEventWithBasic} from "../Account/hooks/useLogEventWithBasic";
 import {sortPetraFirst} from "../../utils";
-import {Stack} from "@mui/system";
+import {Stack} from "@mui/system"
+import Button from "@mui/material/Button";
 import {
   NotifiCardModal,
   NotifiCardModalProps,
@@ -46,11 +41,34 @@ import {Signature} from "@aptos-labs/ts-sdk";
 import Badge from "@mui/material/Badge";
 import {useNotifiHistoryContext} from "@notifi-network/notifi-react";
 
+const customCopy: NotifiCardModalProps["copy"] = {
+  Ftu: {
+    FtuTargetEdit: {
+      TargetInputs: {
+        inputSeparators: {
+          email: "OR",
+          telegram: "OR",
+        },
+      },
+    },
+  },
+  Inbox: {
+    InboxConfigTargetEdit: {
+      TargetInputs: {
+        inputSeparators: {
+          email: "OR",
+          telegram: "OR",
+        },
+      },
+    },
+  },
+};
+
 interface BadgedBellIconProps {
   connected: boolean; // Indicates if the wallet is connected
   setIsNotifiPopupVisible: React.Dispatch<React.SetStateAction<boolean>>; // Function to toggle popup visibility
   isNotifiPopupVisible: boolean; // State for popup visibility
-  toggleWalletConnectModalVisiblityRef: React.MutableRefObject<
+  toggleWalletConnectModalVisibilityRef: React.MutableRefObject<
     (() => void) | null
   >; // Function to open wallet modal
 }
@@ -59,7 +77,7 @@ const BadgedBellIcon: React.FC<BadgedBellIconProps> = ({
   connected,
   setIsNotifiPopupVisible,
   isNotifiPopupVisible,
-  toggleWalletConnectModalVisiblityRef,
+  toggleWalletConnectModalVisibilityRef,
 }) => {
   const theme = useTheme();
   const {unreadCount} = useNotifiHistoryContext();
@@ -106,8 +124,8 @@ const BadgedBellIcon: React.FC<BadgedBellIconProps> = ({
           }`,
         }}
         onClick={() => {
-          if (!connected && toggleWalletConnectModalVisiblityRef.current) {
-            toggleWalletConnectModalVisiblityRef.current();
+          if (!connected && toggleWalletConnectModalVisibilityRef.current) {
+            toggleWalletConnectModalVisibilityRef.current();
           }
           setIsNotifiPopupVisible((preVal) => !preVal);
         }}
@@ -161,29 +179,6 @@ function getHexSignatureFromSignMessageResponse(
 }
 
 export default function Header() {
-  const customCopy: NotifiCardModalProps["copy"] = {
-    Ftu: {
-      FtuTargetEdit: {
-        TargetInputs: {
-          inputSeparators: {
-            email: "OR",
-            telegram: "OR",
-          },
-        },
-      },
-    },
-    Inbox: {
-      InboxConfigTargetEdit: {
-        TargetInputs: {
-          inputSeparators: {
-            email: "OR",
-            telegram: "OR",
-          },
-        },
-      },
-    },
-  };
-
   const scrollTop = () => {
     const docElement = document.documentElement;
     const windowTop =
@@ -198,28 +193,27 @@ export default function Header() {
     }
   };
 
-  const [isNotifiPopupVisible, setIsNotifiPopupVisible] = useState(false);
-  const {toggleColorMode} = useColorMode();
   const theme = useTheme();
   const logEvent = useLogEventWithBasic();
-  const isDark = theme.palette.mode === "dark";
-
-  const {ref, inView} = useInView({
+  
+  const {ref} = useInView({
     rootMargin: "-40px 0px 0px 0px",
     threshold: 0,
   });
+  
+  const [isNotifiPopupVisible, setIsNotifiPopupVisible] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const bellIconRef = useRef<HTMLDivElement | null>(null);
-  const toggleWalletConnectModalVisiblityRef = useRef<(() => void) | null>(
+  const toggleWalletConnectModalVisibilityRef = useRef<(() => void) | null>(
     null,
   );
+  const notificationRequestedRef = useRef(false);
 
   const isOnMobile = !useMediaQuery(theme.breakpoints.up("md"));
   const [state] = useGlobalState();
   const {account, wallet, network, connected, signMessage} = useWallet();
   const navigate = useNavigate();
   const walletAddressRef = useRef("");
-  const notificationRequestedRef = useRef(false);
 
   if (account && walletAddressRef.current !== account.address) {
     logEvent("wallet_connected", account.address, {
@@ -238,44 +232,59 @@ export default function Header() {
   }
 
   const customClassName: NotifiCardModalProps["classNames"] = {
-    container: "notifi-card-modal",
-  };
-
-  const handleOutsideClick = (event: MouseEvent) => {
-    const target = event.target as Node;
-    if (
-      modalRef.current &&
-      !modalRef.current.contains(target) &&
-      bellIconRef.current &&
-      !bellIconRef.current.contains(target)
-    ) {
-      setIsNotifiPopupVisible(false);
-    }
-  };
-
-  useEffect(() => {
-    if (isNotifiPopupVisible) {
-      document.addEventListener("mousedown", handleOutsideClick);
-    } else {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
+      container: "notifi-card-modal",
     };
-  }, [isNotifiPopupVisible]);
+  
+    const handleOutsideClick = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(target) &&
+        bellIconRef.current &&
+        !bellIconRef.current.contains(target)
+      ) {
+        setIsNotifiPopupVisible(false);
+      }
+    };
+  
+    useEffect(() => {
+      if (isNotifiPopupVisible) {
+        document.addEventListener("mousedown", handleOutsideClick);
+      } else {
+        document.removeEventListener("mousedown", handleOutsideClick);
+      }
+      return () => {
+        document.removeEventListener("mousedown", handleOutsideClick);
+      };
+    }, [isNotifiPopupVisible]);
+  
+    useEffect(() => {
+      if (
+        account?.publicKey &&
+        account?.address &&
+        notificationRequestedRef.current
+      ) {
+        setTimeout(() => {
+          setIsNotifiPopupVisible(true);
+          notificationRequestedRef.current = false;
+        }, 3000);
+      }
+    }, [account?.publicKey, account?.address]);
 
-  useEffect(() => {
-    if (
-      account?.publicKey &&
-      account?.address &&
-      notificationRequestedRef.current
-    ) {
-      setTimeout(() => {
-        setIsNotifiPopupVisible(true);
-        notificationRequestedRef.current = false;
-      }, 3000);
-    }
-  }, [account?.publicKey, account?.address]);
+  const MobileHeader = () => {
+    return (
+      <Box
+        sx={{
+          display: {xs: "flex", md: "none"},
+          alignItems: "center",
+          gap: 2,
+        }}
+      >
+        <NetworkSelect />
+        <NavMobile />
+      </Box>
+    );
+  };
 
   return (
     <>
@@ -294,26 +303,21 @@ export default function Header() {
           top: "0",
           borderRadius: "0",
           backdropFilter: "blur(10px)",
-          background: "transparent",
-          ...(!inView &&
-            isDark && {
-              background: "rgba(18,22,21, 0.85)",
-              borderBottom: `1px solid ${theme.palette.common}`,
-            }),
-          ...(!inView &&
-            !isDark && {
-              background: "rgba(254,254,254, 0.8)",
-              borderBottom: `2px solid rgba(18,22,21,0.05)`,
-            }),
+          background: "#000000",
         }}
+        id="header123"
       >
         <FeatureBar />
-        <Container maxWidth={false}>
+        <Container maxWidth={false} id="header456">
           <Toolbar
+          id="header789"
             sx={{
               height: "5rem",
               color:
                 theme.palette.mode === "dark" ? grey[50] : "rgba(18,22,21,1)",
+              display: "flex", // Add this
+              alignItems: "center", // Add this
+              justifyContent: "space-between",
             }}
             disableGutters
           >
@@ -323,38 +327,23 @@ export default function Header() {
               color="inherit"
               underline="none"
               sx={{
-                width: {xs: "30px", sm: "30px", md: "40px"},
-                height: {xs: "30px", sm: "30px", md: "40px"},
+                display: "flex",
+                maxWidth: "33vw",
                 marginRight: "auto",
               }}
             >
               {theme.palette.mode === "dark" ? (
-                <LogoIconW width={"221px"} height={"35px"} />
+                <LogoIconW
+                  style={{width: "100%", height: "auto", maxWidth: "221px"}}
+                />
               ) : (
-                <LogoIconB width={"221px"} height={"35px"} />
+                <LogoIconB
+                  style={{width: "100%", height: "auto", maxWidth: "221px"}}
+                />
               )}
-              {/*<LogoIcon />*/}
             </Link>
 
             <Nav />
-            <NetworkSelect />
-            <Button
-              onClick={toggleColorMode}
-              sx={{
-                width: "30px",
-                height: "30px",
-                display: "flex",
-                alignItems: "center",
-                justifyItems: "center",
-                padding: "0",
-                minWidth: "30px",
-                marginLeft: "1rem",
-                color: "inherit",
-                "&:hover": {background: "transparent", opacity: "0.8"},
-              }}
-            >
-              {theme.palette.mode === "light" ? <IconLight /> : <IconDark />}
-            </Button>
 
             <Box sx={{position: "relative"}} ref={bellIconRef}>
               {!connected && (
@@ -396,9 +385,9 @@ export default function Header() {
                   onClick={() => {
                     if (
                       !connected &&
-                      toggleWalletConnectModalVisiblityRef.current
+                      toggleWalletConnectModalVisibilityRef.current
                     ) {
-                      toggleWalletConnectModalVisiblityRef.current();
+                      toggleWalletConnectModalVisibilityRef.current();
                       notificationRequestedRef.current = true;
                     }
                   }}
@@ -450,8 +439,8 @@ export default function Header() {
                         connected={connected}
                         setIsNotifiPopupVisible={setIsNotifiPopupVisible}
                         isNotifiPopupVisible={isNotifiPopupVisible}
-                        toggleWalletConnectModalVisiblityRef={
-                          toggleWalletConnectModalVisiblityRef
+                        toggleWalletConnectModalVisibilityRef={
+                          toggleWalletConnectModalVisibilityRef
                         }
                       />
                       {isNotifiPopupVisible && (
@@ -481,8 +470,10 @@ export default function Header() {
                   </NotifiContextProvider>
                 )}
             </Box>
+            {/* {isOnMobile && <NetworkSelect />}
+            <NavMobile /> */}
+            {isOnMobile && <MobileHeader />}
 
-            <NavMobile />
             {!isOnMobile && (
               <Box sx={{marginLeft: "1rem"}}>
                 <WalletConnector
@@ -493,8 +484,8 @@ export default function Header() {
                   sortDefaultWallets={sortPetraFirst}
                   sortMoreWallets={sortPetraFirst}
                   modalMaxWidth="sm"
-                  toggleWalletConnectModalVisiblityRef={
-                    toggleWalletConnectModalVisiblityRef
+                  toggleWalletConnectModalVisibilityRef={
+                    toggleWalletConnectModalVisibilityRef
                   }
                 />
               </Box>
