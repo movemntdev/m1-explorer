@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import EmptyTabContent from "../../../components/IndividualPageContent/EmptyTabContent";
 import {useQuery, gql} from "@apollo/client";
+import {Link} from "../../../routing";
 
 type NFTsTabProps = {
   address: string;
@@ -19,6 +20,9 @@ type DigitalAsset = {
     token_name: string;
     token_uri: string;
     description: string;
+  };
+  current_token_ownerships: {
+    property_version_v1: string;
   };
 };
 
@@ -61,6 +65,7 @@ const GET_NFTS = gql`
       token_name
       token_data_id
       current_token_ownerships(where: {owner_address: {_eq: $owner_address}}) {
+        property_version_v1
         owner_address
         amount
         last_transaction_version
@@ -81,6 +86,10 @@ export default function NFTsTab({address}: NFTsTabProps) {
         token_name: nft.token_name,
         token_uri: nft.token_uri,
         description: "",
+      },
+      current_token_ownerships: {
+        property_version_v1:
+          nft.current_token_ownerships[0].property_version_v1,
       },
     })) || [];
 
@@ -121,7 +130,10 @@ export default function NFTsTab({address}: NFTsTabProps) {
       <Grid container spacing={3}>
         {digitalAssets.map((asset) => (
           <Grid item xs={12} sm={4} md={4} key={asset.token_data_id}>
-            <Card>
+            <Card
+              component={Link}
+              to={`/token/${asset.token_data_id}/${asset.current_token_ownerships.property_version_v1 ?? 0}`}
+            >
               <CardMedia
                 component="img"
                 image={convertIpfsToHttps(asset.current_token_data.token_uri)}
