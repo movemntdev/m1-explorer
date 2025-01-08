@@ -25,7 +25,6 @@ import {FewchaWallet} from "fewcha-plugin-wallet-adapter";
 import {MSafeWalletAdapter} from "@msafe/aptos-wallet-adapter";
 import {OKXWallet} from "@okwallet/aptos-wallet-adapter";
 import {useMemo} from "react";
-import BgImage from "../../assets/svg/bg.jpg";
 
 // Statically initialize wallets that don't change for the network
 const fewchaWallet = new FewchaWallet();
@@ -89,7 +88,6 @@ export default function ExplorerLayout({children}: LayoutProps) {
                 flexGrow: 1,
                 display: "flex",
                 flexDirection: "column",
-                backgroundImage: `url(${BgImage})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
