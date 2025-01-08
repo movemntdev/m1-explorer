@@ -369,7 +369,6 @@ export default function TransactionsTable({
     <GradientBorderBox>
       <Box
         sx={{
-          width: "86%",
           margin: "0 auto",
           overflowX: "auto",
           "& .MuiTable-root": {
