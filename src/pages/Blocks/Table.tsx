@@ -10,6 +10,7 @@ import moment from "moment";
 import GeneralTableBody from "../../components/Table/GeneralTableBody";
 import GeneralTableCell from "../../components/Table/GeneralTableCell";
 import {Link, useAugmentToWithGlobalSearchParams} from "../../routing";
+import GradientBorderBox from "../../components/IndividualPageContent/GradientBorderBox";
 
 function getAgeInSeconds(block: Types.Block): string {
   const blockTimestamp = parseTimestamp(block.block_timestamp);
@@ -47,8 +48,18 @@ function BlockAgeCell({block}: BlockCellProps) {
 
 function BlockHashCell({block}: BlockCellProps) {
   return (
-    <GeneralTableCell sx={{textAlign: "left"}}>
-      <HashButton hash={block.block_hash} type={HashType.OTHERS} />
+    <GeneralTableCell sx={{}}>
+      <HashButton
+        hash={block.block_hash}
+        type={HashType.OTHERS}
+        sx={{
+          color: "#FFDA34",
+
+          "& .MuiButton-root": {
+            backgroundColor: "#000000",
+          },
+        }}
+      />
     </GeneralTableCell>
   );
 }
@@ -140,19 +151,21 @@ export default function BlocksTable({
   columns = DEFAULT_COLUMNS,
 }: BlocksTableProps) {
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          {columns.map((column) => (
-            <BlockHeaderCell key={column} column={column} />
-          ))}
-        </TableRow>
-      </TableHead>
-      <GeneralTableBody>
-        {blocks.map((block: any, i: number) => {
-          return <BlockRow key={i} block={block} columns={columns} />;
-        })}
-      </GeneralTableBody>
-    </Table>
+    <GradientBorderBox>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {columns.map((column) => (
+              <BlockHeaderCell key={column} column={column} />
+            ))}
+          </TableRow>
+        </TableHead>
+        <GeneralTableBody>
+          {blocks.map((block: any, i: number) => {
+            return <BlockRow key={i} block={block} columns={columns} />;
+          })}
+        </GeneralTableBody>
+      </Table>
+    </GradientBorderBox>
   );
 }

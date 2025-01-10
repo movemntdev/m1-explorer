@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Box, Stack} from "@mui/material";
+import {Box, BoxProps, Stack} from "@mui/material";
 import Table from "@mui/material/Table";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
@@ -35,6 +35,63 @@ type TransactionCellProps = {
   transaction: Types.Transaction;
   address?: string;
 };
+
+interface GradientBorderBoxProps extends BoxProps {
+  children: React.ReactNode;
+}
+
+function GradientBorderBox({children, ...props}: GradientBorderBoxProps) {
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        margin: "0 auto",
+        width: "86%",
+        "@media (max-width: 768px)": {
+          overflowX: "hidden",
+        },
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          borderRadius: "16px",
+          padding: "1px",
+          background:
+            "linear-gradient(90deg, #FFDA34 0%, rgba(255, 218, 52, 0) 49%, #FFDA34 100%)",
+          maskImage:
+            "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+          maskComposite: "exclude",
+          WebkitMask:
+            "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+          WebkitMaskComposite: "xor",
+          pointerEvents: "none",
+        },
+        "& .scroll-container": {
+          position: "relative",
+          width: "100%",
+          overflowX: "auto",
+          borderRadius: "16px",
+          padding: "1px",
+          overscrollBehaviorX: "none",
+          "@media (max-width: 768px)": {
+            maxWidth: "100vw",
+          },
+          "& > *": {
+            paddingLeft: "16px",
+            paddingRight: "16px",
+          },
+        },
+        ...props.sx,
+      }}
+      {...props}
+    >
+      <div className="scroll-container">{children}</div>
+    </Box>
+  );
+}
 
 function SequenceNumberCell({transaction}: TransactionCellProps) {
   return (
@@ -94,7 +151,11 @@ function TransactionSenderCell({transaction}: TransactionCellProps) {
   }
 
   return (
-    <GeneralTableCell>
+    <GeneralTableCell
+      sx={{
+        "& a": {color: "#FFDA34"},
+      }}
+    >
       {sender && <HashButton hash={sender} type={HashType.ACCOUNT} />}
     </GeneralTableCell>
   );
@@ -105,7 +166,11 @@ function TransactionReceiverOrCounterPartyCell({
 }: TransactionCellProps) {
   const counterparty = getTransactionCounterparty(transaction);
   return (
-    <GeneralTableCell>
+    <GeneralTableCell
+      sx={{
+        "& a": {color: "#FFDA34"},
+      }}
+    >
       {counterparty && (
         <HashButton hash={counterparty.address} type={HashType.ACCOUNT} />
       )}
@@ -124,7 +189,7 @@ function TransactionFunctionCell({transaction}: TransactionCellProps) {
     >
       <TransactionFunction
         transaction={transaction}
-        sx={{maxWidth: {xs: 200, md: 300, lg: 400}}}
+        sx={{maxWidth: {xs: 200, md: 300, lg: 400, color: "#FFDA34"}}}
       />
     </GeneralTableCell>
   );
@@ -311,26 +376,85 @@ export default function TransactionsTable({
   columns = DEFAULT_COLUMNS,
 }: TransactionsTableProps) {
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          {columns.map((column) => (
-            <TransactionHeaderCell key={column} column={column} />
-          ))}
-        </TableRow>
-      </TableHead>
-      <GeneralTableBody>
-        {transactions.map((transaction, i) => {
-          return (
-            <TransactionRow
-              key={`${i}-${transaction.hash}`}
-              transaction={transaction}
-              columns={columns}
-            />
-          );
-        })}
-      </GeneralTableBody>
-    </Table>
+    <GradientBorderBox>
+      <Box
+        sx={{
+          margin: "0 auto",
+          width: "100%",
+          overflowX: "auto",
+          padding: "1px",
+          "& .MuiTable-root": {
+            tableLayout: "fixed",
+          },
+
+          "&::-webkit-scrollbar": {
+            height: "6px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "rgba(255, 218, 52, 0.3)",
+            borderRadius: "3px",
+          },
+        }}
+      >
+        <Table
+          sx={{
+            minWidth: "800px",
+            width: "100%",
+            tableLayout: "fixed",
+            "& td, & th": {
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              padding: "12px 16px",
+            },
+            // Desktop styles
+            "@media (min-width: 769px)": {
+              "& th:nth-of-type(2)": {
+                width: "60px",
+                minWidth: "60px",
+                maxWidth: "60px",
+              },
+              "& th:nth-of-type(6)": {
+                width: "30%",
+              },
+            },
+            "@media (max-width: 768px)": {
+              "& th:nth-of-type(1), & td:nth-of-type(1)": {minWidth: "120px"},
+              "& th:nth-of-type(2), & td:nth-of-type(2)": {minWidth: "80px"},
+              "& th:nth-of-type(3), & td:nth-of-type(3)": {minWidth: "160px"},
+              "& th:nth-of-type(4), & td:nth-of-type(4)": {minWidth: "180px"},
+              "& th:nth-of-type(5), & td:nth-of-type(5)": {minWidth: "180px"},
+              "& th:nth-of-type(6), & td:nth-of-type(6)": {minWidth: "160px"},
+              "& td, & th": {
+                fontSize: "0.875rem",
+              },
+            },
+          }}
+        >
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TransactionHeaderCell key={column} column={column} />
+              ))}
+            </TableRow>
+          </TableHead>
+          <GeneralTableBody>
+            {transactions.map((transaction, i) => {
+              return (
+                <TransactionRow
+                  key={`${i}-${transaction.hash}`}
+                  transaction={transaction}
+                  columns={columns}
+                />
+              );
+            })}
+          </GeneralTableBody>
+        </Table>
+      </Box>
+    </GradientBorderBox>
   );
 }
 
@@ -346,7 +470,7 @@ export function UserTransactionsTable({
   address,
 }: UserTransactionsTableProps) {
   return (
-    <Table>
+    <Table sx={{minWidth: 650}}>
       <TableHead>
         <TableRow>
           {columns.map((column) => (
