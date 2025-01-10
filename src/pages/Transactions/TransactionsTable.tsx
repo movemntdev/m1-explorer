@@ -46,13 +46,9 @@ function GradientBorderBox({children, ...props}: GradientBorderBoxProps) {
       sx={{
         position: "relative",
         margin: "0 auto",
-        overflowX: "auto",
-
         width: "86%",
-        "& > *": {
-          position: "relative",
-          zIndex: 2,
-          boxSizing: "border-box",
+        "@media (max-width: 768px)": {
+          overflowX: "hidden",
         },
         "&::before": {
           content: '""',
@@ -72,13 +68,27 @@ function GradientBorderBox({children, ...props}: GradientBorderBoxProps) {
             "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
           WebkitMaskComposite: "xor",
           pointerEvents: "none",
-          zIndex: 1,
+        },
+        "& .scroll-container": {
+          position: "relative",
+          width: "100%",
+          overflowX: "auto",
+          borderRadius: "16px",
+          padding: "1px",
+          overscrollBehaviorX: "none",
+          "@media (max-width: 768px)": {
+            maxWidth: "100vw",
+          },
+          "& > *": {
+            paddingLeft: "16px",
+            paddingRight: "16px",
+          },
         },
         ...props.sx,
       }}
       {...props}
     >
-      {children}
+      <div className="scroll-container">{children}</div>
     </Box>
   );
 }
@@ -370,29 +380,60 @@ export default function TransactionsTable({
       <Box
         sx={{
           margin: "0 auto",
+          width: "100%",
           overflowX: "auto",
+          padding: "1px",
           "& .MuiTable-root": {
-            minWidth: "100%",
             tableLayout: "fixed",
           },
-          "& th:nth-of-type(2)": {
-            // Type column
-            width: "60px",
-            minWidth: "60px",
-            maxWidth: "60px",
+
+          "&::-webkit-scrollbar": {
+            height: "6px",
           },
-          "& th:nth-of-type(6)": {
-            // Function column
-            width: "30%",
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
           },
-          "& td": {
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
+          "&::-webkit-scrollbar-thumb": {
+            background: "rgba(255, 218, 52, 0.3)",
+            borderRadius: "3px",
           },
         }}
       >
-        <Table>
+        <Table
+          sx={{
+            minWidth: "800px",
+            width: "100%",
+            tableLayout: "fixed",
+            "& td, & th": {
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              padding: "12px 16px",
+            },
+            // Desktop styles
+            "@media (min-width: 769px)": {
+              "& th:nth-of-type(2)": {
+                width: "60px",
+                minWidth: "60px",
+                maxWidth: "60px",
+              },
+              "& th:nth-of-type(6)": {
+                width: "30%",
+              },
+            },
+            "@media (max-width: 768px)": {
+              "& th:nth-of-type(1), & td:nth-of-type(1)": {minWidth: "120px"},
+              "& th:nth-of-type(2), & td:nth-of-type(2)": {minWidth: "80px"},
+              "& th:nth-of-type(3), & td:nth-of-type(3)": {minWidth: "160px"},
+              "& th:nth-of-type(4), & td:nth-of-type(4)": {minWidth: "180px"},
+              "& th:nth-of-type(5), & td:nth-of-type(5)": {minWidth: "180px"},
+              "& th:nth-of-type(6), & td:nth-of-type(6)": {minWidth: "160px"},
+              "& td, & th": {
+                fontSize: "0.875rem",
+              },
+            },
+          }}
+        >
           <TableHead>
             <TableRow>
               {columns.map((column) => (
