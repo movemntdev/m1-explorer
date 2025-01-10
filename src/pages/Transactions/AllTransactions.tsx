@@ -13,26 +13,36 @@ import {Button, Stack} from "@mui/material";
 import TransactionsTable from "./TransactionsTable";
 
 const LIMIT = 20;
-const NUM_PAGES = 100;
 
 function maxStart(maxVersion: number, limit: number) {
   return Math.max(0, 1 + maxVersion - limit);
 }
 
 function RenderPagination({
-  currentPage,
-  numPages,
+  start,
+  limit,
+  maxVersion,
 }: {
-  currentPage: number;
-  numPages: number;
+  start: number;
+  limit: number;
+  maxVersion: number;
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const numPages = Math.ceil(maxVersion / limit);
+  const progress = 1 - (start + limit - 1) / maxVersion;
+  const currentPage = 1 + Math.floor(progress * numPages);
 
-  const handlePageChange = (newPageNum: number) => {
-    if (newPageNum >= 1 && newPageNum <= numPages) {
-      searchParams.set("page", newPageNum.toString());
-      setSearchParams(searchParams);
-    }
+  const handleChange = (
+    event: React.ChangeEvent<unknown>,
+    newPageNum: number,
+  ) => {
+    const delta = (currentPage - newPageNum) * limit;
+    const newStart = Math.max(
+      0,
+      Math.min(maxStart(maxVersion, limit), start + delta),
+    );
+    searchParams.set("start", newStart.toString());
+    setSearchParams(searchParams);
   };
 
   const renderPageNumbers = () => {
@@ -49,7 +59,7 @@ function RenderPagination({
       pageNumbers.push(
         <Button
           key={i}
-          onClick={() => handlePageChange(i)}
+          onClick={(e) => handleChange(e, i)}
           sx={{
             minWidth: "auto",
             px: 1.5,
@@ -92,7 +102,7 @@ function RenderPagination({
       }}
     >
       <Button
-        onClick={() => handlePageChange(currentPage - 1)}
+        onClick={(e) => handleChange(e, currentPage - 1)}
         disabled={currentPage === 1}
         sx={{
           px: 2,
@@ -118,7 +128,7 @@ function RenderPagination({
       {renderPageNumbers()}
 
       <Button
-        onClick={() => handlePageChange(currentPage + 1)}
+        onClick={(e) => handleChange(e, currentPage + 1)}
         disabled={currentPage === numPages}
         sx={{
           px: 2,
@@ -158,7 +168,7 @@ function TransactionsPageInner({data}: UseQueryResult<Types.IndexResponse>) {
   const limit = LIMIT;
   const [state] = useGlobalState();
   const [searchParams] = useSearchParams();
-  const currentPage = parseInt(searchParams.get("page") ?? "1");
+  // const currentPage = parseInt(searchParams.get("page") ?? "1");
 
   let start = maxStart(maxVersion, limit);
   const startParam = searchParams.get("start");
@@ -180,7 +190,13 @@ function TransactionsPageInner({data}: UseQueryResult<Types.IndexResponse>) {
         </Box>
 
         <Box sx={{display: "flex", justifyContent: "center"}}>
-          <RenderPagination currentPage={currentPage} numPages={NUM_PAGES} />
+          <RenderPagination
+            {...{
+              start,
+              limit,
+              maxVersion,
+            }}
+          />
         </Box>
       </Stack>
     </>
