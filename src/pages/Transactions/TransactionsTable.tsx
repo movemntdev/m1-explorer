@@ -49,6 +49,7 @@ function GradientBorderBox({children, ...props}: GradientBorderBoxProps) {
         width: "86%",
         "@media (max-width: 768px)": {
           overflowX: "hidden",
+          width: "81%",
         },
         "&::before": {
           content: '""',
@@ -380,13 +381,8 @@ export default function TransactionsTable({
       <Box
         sx={{
           margin: "0 auto",
-          width: "100%",
           overflowX: "auto",
           padding: "1px",
-          "& .MuiTable-root": {
-            tableLayout: "fixed",
-          },
-
           "&::-webkit-scrollbar": {
             height: "6px",
           },
@@ -401,9 +397,8 @@ export default function TransactionsTable({
       >
         <Table
           sx={{
-            minWidth: "800px",
-            width: "100%",
             tableLayout: "fixed",
+
             "& td, & th": {
               overflow: "hidden",
               textOverflow: "ellipsis",
@@ -422,12 +417,7 @@ export default function TransactionsTable({
               },
             },
             "@media (max-width: 768px)": {
-              "& th:nth-of-type(1), & td:nth-of-type(1)": {minWidth: "120px"},
-              "& th:nth-of-type(2), & td:nth-of-type(2)": {minWidth: "80px"},
-              "& th:nth-of-type(3), & td:nth-of-type(3)": {minWidth: "160px"},
-              "& th:nth-of-type(4), & td:nth-of-type(4)": {minWidth: "180px"},
-              "& th:nth-of-type(5), & td:nth-of-type(5)": {minWidth: "180px"},
-              "& th:nth-of-type(6), & td:nth-of-type(6)": {minWidth: "160px"},
+              tableLayout: "auto",
               "& td, & th": {
                 fontSize: "0.875rem",
               },
