@@ -88,6 +88,9 @@ export default function ExplorerLayout({children}: LayoutProps) {
                 flexGrow: 1,
                 display: "flex",
                 flexDirection: "column",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
               }}
             >
               <Header />

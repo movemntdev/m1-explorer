@@ -13,11 +13,20 @@ export default function BlocksPage() {
   return (
     <>
       <LoadingModal open={isLoading} />
-      <Box>
-        <PageHeader />
-        <Typography variant="h3" marginBottom={2}>
-          Latest Blocks
-        </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        <Box sx={{width: "86%"}}>
+          <PageHeader />
+          <Typography variant="h4" marginBottom={2}>
+            Latest Blocks
+          </Typography>
+        </Box>
         <BlocksTable blocks={recentBlocks} />
       </Box>
     </>

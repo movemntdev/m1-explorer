@@ -9,58 +9,14 @@ import {getLedgerInfo, getTransactions} from "../../api";
 import {useGlobalState} from "../../global-config/GlobalConfig";
 import Box from "@mui/material/Box";
 import {useSearchParams} from "react-router-dom";
-import {Pagination, Stack} from "@mui/material";
+import {Stack} from "@mui/material";
 import TransactionsTable from "./TransactionsTable";
+import {
+  maxStart,
+  RenderPagination,
+} from "../../components/Table/RenderPagination";
 
 const LIMIT = 20;
-
-function maxStart(maxVersion: number, limit: number) {
-  return Math.max(0, 1 + maxVersion - limit);
-}
-
-function RenderPagination({
-  start,
-  limit,
-  maxVersion,
-}: {
-  start: number;
-  limit: number;
-  maxVersion: number;
-}) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const numPages = Math.ceil(maxVersion / limit);
-  const progress = 1 - (start + limit - 1) / maxVersion;
-  const currentPage = 1 + Math.floor(progress * numPages);
-
-  const handleChange = (
-    event: React.ChangeEvent<unknown>,
-    newPageNum: number,
-  ) => {
-    const delta = (currentPage - newPageNum) * limit;
-    const newStart = Math.max(
-      0,
-      Math.min(maxStart(maxVersion, limit), start + delta),
-    );
-
-    searchParams.set("start", newStart.toString());
-    setSearchParams(searchParams);
-  };
-
-  return (
-    <Pagination
-      sx={{mt: 3}}
-      count={numPages}
-      variant="outlined"
-      showFirstButton
-      showLastButton
-      page={currentPage}
-      siblingCount={4}
-      boundaryCount={0}
-      shape="rounded"
-      onChange={handleChange}
-    />
-  );
-}
 
 function TransactionContent({data}: UseQueryResult<Array<Types.Transaction>>) {
   if (!data) {

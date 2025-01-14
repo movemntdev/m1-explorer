@@ -1,53 +1,44 @@
 import * as React from "react";
-import {Box, Stack} from "@mui/material";
+import {Box, Stack, Typography} from "@mui/material";
 import Table from "@mui/material/Table";
+import {Types} from "aptos";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Typography from "@mui/material/Typography";
-import GeneralTableRow from "../../components/Table/GeneralTableRow";
-import GeneralTableHeaderCell from "../../components/Table/GeneralTableHeaderCell";
-import HashButton, {HashType} from "../../components/HashButton";
-import {Types} from "aptos";
-import {assertNever} from "../../utils";
-import {TableTransactionType} from "../../components/TransactionType";
-import {TableTransactionStatus} from "../../components/TransactionStatus";
-import {getTableFormattedTimestamp} from "../utils";
-import GasFeeValue from "../../components/IndividualPageContent/ContentValue/GasFeeValue";
-import {useGetTransaction} from "../../api/hooks/useGetTransaction";
-import TransactionTypeTooltip from "./Components/TransactionTypeTooltip";
-import {APTCurrencyValue} from "../../components/IndividualPageContent/ContentValue/CurrencyValue";
-import GeneralTableCell from "../../components/Table/GeneralTableCell";
-import GeneralTableBody from "../../components/Table/GeneralTableBody";
-import {
-  grey,
-  negativeColor,
-  aptosColor,
-} from "../../themes/colors/aptosColorPalette";
-import TransactionFunction from "../Transaction/Tabs/Components/TransactionFunction";
+import GeneralTableRow from "../../../components/Table/GeneralTableRow";
+import GeneralTableHeaderCell from "../../../components/Table/GeneralTableHeaderCell";
+import GeneralTableCell from "../../../components/Table/GeneralTableCell";
+import HashButton, {HashType} from "../../../components/HashButton";
+// import {Link} from "../../../routing";
+import GeneralTableBody from "../../../components/Table/GeneralTableBody";
+import {TableGradientBorderBox} from "../../../components/IndividualPageContent/GradientBorderBox";
+import {TableTransactionStatus} from "../../../components/TransactionStatus";
+import {Link} from "../../../routing";
+import {TableTransactionType} from "../../../components/TransactionType";
+import {getTableFormattedTimestamp} from "../../utils";
 import {
   getCoinBalanceChangeForAccount,
   getTransactionAmount,
   getTransactionCounterparty,
-} from "../Transaction/utils";
-import {Link} from "../../routing";
-import {TableGradientBorderBox} from "../../components/IndividualPageContent/GradientBorderBox";
+} from "../../Transaction/utils";
+import TransactionFunction from "../../Transaction/Tabs/Components/TransactionFunction";
+import {
+  aptosColor,
+  grey,
+  negativeColor,
+} from "../../../themes/colors/aptosColorPalette";
+import {APTCurrencyValue} from "../../../components/IndividualPageContent/ContentValue/CurrencyValue";
+import TransactionTypeTooltip from "../../Transactions/Components/TransactionTypeTooltip";
+import {assertNever} from "../../../utils";
+import GasFeeValue from "../../../components/IndividualPageContent/ContentValue/GasFeeValue";
 
-type TransactionCellProps = {
+type BlockTransactionCellProps = {
   transaction: Types.Transaction;
   address?: string;
 };
 
-export function SequenceNumberCell({transaction}: TransactionCellProps) {
-  return (
-    <GeneralTableCell sx={{textAlign: "left"}}>
-      {"sequence_number" in transaction && transaction.sequence_number}
-    </GeneralTableCell>
-  );
-}
-
-export function TransactionVersionStatusCell({
+function TransactionVersionStatusCell({
   transaction,
-}: TransactionCellProps) {
+}: BlockTransactionCellProps) {
   return (
     <GeneralTableCell sx={{textAlign: "left"}}>
       <Stack direction="row" spacing={0.5}>
@@ -66,7 +57,7 @@ export function TransactionVersionStatusCell({
   );
 }
 
-export function TransactionTypeCell({transaction}: TransactionCellProps) {
+function TransactionTypeCell({transaction}: BlockTransactionCellProps) {
   return (
     <GeneralTableCell>
       {<TableTransactionType type={transaction.type} />}
@@ -74,7 +65,7 @@ export function TransactionTypeCell({transaction}: TransactionCellProps) {
   );
 }
 
-export function TransactionTimestampCell({transaction}: TransactionCellProps) {
+function TransactionTimestampCell({transaction}: BlockTransactionCellProps) {
   const timestamp =
     "timestamp" in transaction ? (
       getTableFormattedTimestamp(transaction.timestamp)
@@ -88,7 +79,7 @@ export function TransactionTimestampCell({transaction}: TransactionCellProps) {
   return <GeneralTableCell>{timestamp}</GeneralTableCell>;
 }
 
-export function TransactionSenderCell({transaction}: TransactionCellProps) {
+function TransactionSenderCell({transaction}: BlockTransactionCellProps) {
   let sender;
   if (transaction.type === "user_transaction") {
     sender = (transaction as Types.UserTransaction).sender;
@@ -107,9 +98,9 @@ export function TransactionSenderCell({transaction}: TransactionCellProps) {
   );
 }
 
-export function TransactionReceiverOrCounterPartyCell({
+function TransactionReceiverOrCounterPartyCell({
   transaction,
-}: TransactionCellProps) {
+}: BlockTransactionCellProps) {
   const counterparty = getTransactionCounterparty(transaction);
   return (
     <GeneralTableCell
@@ -124,7 +115,7 @@ export function TransactionReceiverOrCounterPartyCell({
   );
 }
 
-export function TransactionFunctionCell({transaction}: TransactionCellProps) {
+function TransactionFunctionCell({transaction}: BlockTransactionCellProps) {
   return (
     <GeneralTableCell
       sx={{
@@ -184,10 +175,10 @@ function TransactionAmount({
   return null;
 }
 
-export function TransactionAmountGasCell({
+function TransactionAmountGasCell({
   transaction,
   address,
-}: TransactionCellProps) {
+}: BlockTransactionCellProps) {
   return (
     <GeneralTableCell sx={{paddingY: 1}}>
       <Stack sx={{textAlign: "right"}}>
@@ -208,8 +199,7 @@ export function TransactionAmountGasCell({
   );
 }
 
-const TransactionCells = Object.freeze({
-  sequenceNum: SequenceNumberCell,
+const BlockTransactionCells = Object.freeze({
   versionStatus: TransactionVersionStatusCell,
   type: TransactionTypeCell,
   timestamp: TransactionTimestampCell,
@@ -219,9 +209,9 @@ const TransactionCells = Object.freeze({
   amountGas: TransactionAmountGasCell,
 });
 
-type TransactionColumn = keyof typeof TransactionCells;
+type BlockTransactionColumn = keyof typeof BlockTransactionCells;
 
-const DEFAULT_COLUMNS: TransactionColumn[] = [
+const DEFAULT_COLUMNS: BlockTransactionColumn[] = [
   "versionStatus",
   "type",
   "timestamp",
@@ -231,61 +221,12 @@ const DEFAULT_COLUMNS: TransactionColumn[] = [
   "amountGas",
 ];
 
-type TransactionRowProps = {
-  transaction: Types.Transaction;
-  columns: TransactionColumn[];
+type BlockTransactionHeaderCellProps = {
+  column: BlockTransactionColumn;
 };
 
-function TransactionRow({transaction, columns}: TransactionRowProps) {
-  return (
-    <GeneralTableRow
-      to={`/txn/${"version" in transaction && transaction.version}`}
-    >
-      {columns.map((column) => {
-        const Cell = TransactionCells[column];
-        return <Cell key={column} transaction={transaction} />;
-      })}
-    </GeneralTableRow>
-  );
-}
-
-type UserTransactionRowProps = {
-  version: number;
-  columns: TransactionColumn[];
-  address?: string;
-};
-
-function UserTransactionRow({
-  version,
-  columns,
-  address,
-}: UserTransactionRowProps) {
-  const {data: transaction, isError} = useGetTransaction(version.toString());
-
-  if (!transaction || isError) {
-    return null;
-  }
-
-  return (
-    <GeneralTableRow to={`/txn/${version}`}>
-      {columns.map((column) => {
-        const Cell = TransactionCells[column];
-        return (
-          <Cell key={column} transaction={transaction} address={address} />
-        );
-      })}
-    </GeneralTableRow>
-  );
-}
-
-type TransactionHeaderCellProps = {
-  column: TransactionColumn;
-};
-
-function TransactionHeaderCell({column}: TransactionHeaderCellProps) {
+function BlockTransactionHeaderCell({column}: BlockTransactionHeaderCellProps) {
   switch (column) {
-    case "sequenceNum":
-      return <GeneralTableHeaderCell header="#" />;
     case "versionStatus":
       return <GeneralTableHeaderCell header="Version" />;
     case "type":
@@ -311,18 +252,33 @@ function TransactionHeaderCell({column}: TransactionHeaderCellProps) {
   }
 }
 
-type TransactionsTableProps = {
-  transactions: Types.Transaction[];
-  columns?: TransactionColumn[];
-  address?: string;
+type BlockTransactionRowProps = {
+  transaction: Types.Transaction;
+  columns: BlockTransactionColumn[];
 };
 
-export default function TransactionsTable({
+function BlockTransactionRow({transaction, columns}: BlockTransactionRowProps) {
+  return (
+    <GeneralTableRow>
+      {columns.map((column) => {
+        const Cell = BlockTransactionCells[column];
+        return <Cell key={column} transaction={transaction} />;
+      })}
+    </GeneralTableRow>
+  );
+}
+
+type BlockTransactionsTableProps = {
+  transactions: Types.Transaction[];
+  columns?: BlockTransactionColumn[];
+};
+
+export default function BlockTransactionsTable({
   transactions,
   columns = DEFAULT_COLUMNS,
-}: TransactionsTableProps) {
+}: BlockTransactionsTableProps) {
   return (
-    <TableGradientBorderBox>
+    <TableGradientBorderBox width="100%" marginTop={4} mobileWidth="93%">
       <Box
         sx={{
           margin: "0 auto",
@@ -340,45 +296,18 @@ export default function TransactionsTable({
           },
         }}
       >
-        <Table
-          sx={{
-            tableLayout: "fixed",
-            "& td, & th": {
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              padding: "12px 16px",
-            },
-            // Desktop styles
-            "@media (min-width: 769px)": {
-              "& th:nth-of-type(2)": {
-                width: "60px",
-                minWidth: "60px",
-                maxWidth: "60px",
-              },
-              "& th:nth-of-type(6)": {
-                width: "30%",
-              },
-            },
-            "@media (max-width: 768px)": {
-              tableLayout: "auto",
-              "& td, & th": {
-                fontSize: "0.875rem",
-              },
-            },
-          }}
-        >
+        <Table>
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TransactionHeaderCell key={column} column={column} />
+                <BlockTransactionHeaderCell key={column} column={column} />
               ))}
             </TableRow>
           </TableHead>
           <GeneralTableBody>
             {transactions.map((transaction, i) => {
               return (
-                <TransactionRow
+                <BlockTransactionRow
                   key={`${i}-${transaction.hash}`}
                   transaction={transaction}
                   columns={columns}
@@ -386,44 +315,15 @@ export default function TransactionsTable({
               );
             })}
           </GeneralTableBody>
+          {/* <TableFooter>
+            <TablePagination
+            // currentPage={currentPage}
+            // totalPages={totalPages}
+            // onPageChange={setCurrentPage}
+            />
+          </TableFooter> */}
         </Table>
       </Box>
     </TableGradientBorderBox>
-  );
-}
-
-type UserTransactionsTableProps = {
-  versions: number[];
-  columns?: TransactionColumn[];
-  address?: string;
-};
-
-export function UserTransactionsTable({
-  versions,
-  columns = DEFAULT_COLUMNS,
-  address,
-}: UserTransactionsTableProps) {
-  return (
-    <Table sx={{minWidth: 650}}>
-      <TableHead>
-        <TableRow>
-          {columns.map((column) => (
-            <TransactionHeaderCell key={column} column={column} />
-          ))}
-        </TableRow>
-      </TableHead>
-      <GeneralTableBody>
-        {versions.map((version, i) => {
-          return (
-            <UserTransactionRow
-              key={`${i}-${version}`}
-              version={version}
-              columns={columns}
-              address={address}
-            />
-          );
-        })}
-      </GeneralTableBody>
-    </Table>
   );
 }
