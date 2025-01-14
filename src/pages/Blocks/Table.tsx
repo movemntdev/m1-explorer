@@ -151,7 +151,7 @@ export default function BlocksTable({
   columns = DEFAULT_COLUMNS,
 }: BlocksTableProps) {
   return (
-    <TableGradientBorderBox>
+    <TableGradientBorderBox mobileWidth="86%">
       <Box
         sx={{
           margin: "0 auto",
@@ -171,7 +171,10 @@ export default function BlocksTable({
       >
         <Table
           sx={{
-            tableLayout: "fixed",
+            // tableLayout: "fixed",
+            "& th:nth-of-type(2), & td:nth-of-type(2)": {
+              width: "30%",
+            },
             "& td, & th": {
               overflow: "hidden",
               textOverflow: "ellipsis",

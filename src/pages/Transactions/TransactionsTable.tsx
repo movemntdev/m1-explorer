@@ -37,7 +37,7 @@ type TransactionCellProps = {
   address?: string;
 };
 
-function SequenceNumberCell({transaction}: TransactionCellProps) {
+export function SequenceNumberCell({transaction}: TransactionCellProps) {
   return (
     <GeneralTableCell sx={{textAlign: "left"}}>
       {"sequence_number" in transaction && transaction.sequence_number}
@@ -45,7 +45,9 @@ function SequenceNumberCell({transaction}: TransactionCellProps) {
   );
 }
 
-function TransactionVersionStatusCell({transaction}: TransactionCellProps) {
+export function TransactionVersionStatusCell({
+  transaction,
+}: TransactionCellProps) {
   return (
     <GeneralTableCell sx={{textAlign: "left"}}>
       <Stack direction="row" spacing={0.5}>
@@ -64,7 +66,7 @@ function TransactionVersionStatusCell({transaction}: TransactionCellProps) {
   );
 }
 
-function TransactionTypeCell({transaction}: TransactionCellProps) {
+export function TransactionTypeCell({transaction}: TransactionCellProps) {
   return (
     <GeneralTableCell>
       {<TableTransactionType type={transaction.type} />}
@@ -72,7 +74,7 @@ function TransactionTypeCell({transaction}: TransactionCellProps) {
   );
 }
 
-function TransactionTimestampCell({transaction}: TransactionCellProps) {
+export function TransactionTimestampCell({transaction}: TransactionCellProps) {
   const timestamp =
     "timestamp" in transaction ? (
       getTableFormattedTimestamp(transaction.timestamp)
@@ -86,7 +88,7 @@ function TransactionTimestampCell({transaction}: TransactionCellProps) {
   return <GeneralTableCell>{timestamp}</GeneralTableCell>;
 }
 
-function TransactionSenderCell({transaction}: TransactionCellProps) {
+export function TransactionSenderCell({transaction}: TransactionCellProps) {
   let sender;
   if (transaction.type === "user_transaction") {
     sender = (transaction as Types.UserTransaction).sender;
@@ -105,7 +107,7 @@ function TransactionSenderCell({transaction}: TransactionCellProps) {
   );
 }
 
-function TransactionReceiverOrCounterPartyCell({
+export function TransactionReceiverOrCounterPartyCell({
   transaction,
 }: TransactionCellProps) {
   const counterparty = getTransactionCounterparty(transaction);
@@ -122,7 +124,7 @@ function TransactionReceiverOrCounterPartyCell({
   );
 }
 
-function TransactionFunctionCell({transaction}: TransactionCellProps) {
+export function TransactionFunctionCell({transaction}: TransactionCellProps) {
   return (
     <GeneralTableCell
       sx={{
@@ -182,7 +184,7 @@ function TransactionAmount({
   return null;
 }
 
-function TransactionAmountGasCell({
+export function TransactionAmountGasCell({
   transaction,
   address,
 }: TransactionCellProps) {

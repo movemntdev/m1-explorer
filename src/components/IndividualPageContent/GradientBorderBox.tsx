@@ -4,6 +4,13 @@ import React from "react";
 interface GradientBorderBoxProps extends BoxProps {
   children: React.ReactNode;
 }
+
+interface TableGradientBorderBoxProps extends BoxProps {
+  width?: string | number;
+  mobileWidth?: string | number;
+  marginTop?: string | number;
+  children: React.ReactNode;
+}
 export default function GradientBorderBox({
   children,
   ...props
@@ -64,17 +71,21 @@ export default function GradientBorderBox({
 
 export function TableGradientBorderBox({
   children,
+  width = "86%",
+  mobileWidth = "81%",
+  marginTop = 0,
   ...props
-}: GradientBorderBoxProps) {
+}: TableGradientBorderBoxProps) {
   return (
     <Box
       sx={{
         position: "relative",
         margin: "0 auto",
-        width: "86%",
+        marginTop: marginTop,
+        width: width,
         "@media (max-width: 768px)": {
           overflowX: "hidden",
-          width: "81%",
+          width: mobileWidth,
         },
         "&::before": {
           content: '""',
