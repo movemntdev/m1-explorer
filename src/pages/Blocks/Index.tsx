@@ -26,8 +26,8 @@ export default function BlocksPage() {
           <Typography variant="h4" marginBottom={2}>
             Latest Blocks
           </Typography>
-          <BlocksTable blocks={recentBlocks} />
         </Box>
+        <BlocksTable blocks={recentBlocks} />
       </Box>
     </>
   );

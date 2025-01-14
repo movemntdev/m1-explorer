@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Box, BoxProps, Stack} from "@mui/material";
+import {Box, Stack} from "@mui/material";
 import Table from "@mui/material/Table";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
@@ -30,69 +30,12 @@ import {
   getTransactionCounterparty,
 } from "../Transaction/utils";
 import {Link} from "../../routing";
+import {TableGradientBorderBox} from "../../components/IndividualPageContent/GradientBorderBox";
 
 type TransactionCellProps = {
   transaction: Types.Transaction;
   address?: string;
 };
-
-interface GradientBorderBoxProps extends BoxProps {
-  children: React.ReactNode;
-}
-
-function GradientBorderBox({children, ...props}: GradientBorderBoxProps) {
-  return (
-    <Box
-      sx={{
-        position: "relative",
-        margin: "0 auto",
-        width: "86%",
-        "@media (max-width: 768px)": {
-          overflowX: "hidden",
-          width: "81%",
-        },
-        "&::before": {
-          content: '""',
-          position: "absolute",
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          borderRadius: "16px",
-          padding: "1px",
-          background:
-            "linear-gradient(90deg, #FFDA34 0%, rgba(255, 218, 52, 0) 49%, #FFDA34 100%)",
-          maskImage:
-            "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-          maskComposite: "exclude",
-          WebkitMask:
-            "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-          WebkitMaskComposite: "xor",
-          pointerEvents: "none",
-        },
-        "& .scroll-container": {
-          position: "relative",
-          width: "100%",
-          overflowX: "auto",
-          borderRadius: "16px",
-          padding: "1px",
-          overscrollBehaviorX: "none",
-          "@media (max-width: 768px)": {
-            maxWidth: "100vw",
-          },
-          "& > *": {
-            paddingLeft: "16px",
-            paddingRight: "16px",
-          },
-        },
-        ...props.sx,
-      }}
-      {...props}
-    >
-      <div className="scroll-container">{children}</div>
-    </Box>
-  );
-}
 
 function SequenceNumberCell({transaction}: TransactionCellProps) {
   return (
@@ -377,7 +320,7 @@ export default function TransactionsTable({
   columns = DEFAULT_COLUMNS,
 }: TransactionsTableProps) {
   return (
-    <GradientBorderBox>
+    <TableGradientBorderBox>
       <Box
         sx={{
           margin: "0 auto",
@@ -398,7 +341,6 @@ export default function TransactionsTable({
         <Table
           sx={{
             tableLayout: "fixed",
-
             "& td, & th": {
               overflow: "hidden",
               textOverflow: "ellipsis",
@@ -444,7 +386,7 @@ export default function TransactionsTable({
           </GeneralTableBody>
         </Table>
       </Box>
-    </GradientBorderBox>
+    </TableGradientBorderBox>
   );
 }
 

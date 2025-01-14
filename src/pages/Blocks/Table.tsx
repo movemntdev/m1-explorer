@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Table, TableHead, TableRow} from "@mui/material";
+import {Box, Table, TableHead, TableRow} from "@mui/material";
 import GeneralTableRow from "../../components/Table/GeneralTableRow";
 import GeneralTableHeaderCell from "../../components/Table/GeneralTableHeaderCell";
 import {assertNever} from "../../utils";
@@ -10,7 +10,7 @@ import moment from "moment";
 import GeneralTableBody from "../../components/Table/GeneralTableBody";
 import GeneralTableCell from "../../components/Table/GeneralTableCell";
 import {Link, useAugmentToWithGlobalSearchParams} from "../../routing";
-import GradientBorderBox from "../../components/IndividualPageContent/GradientBorderBox";
+import {TableGradientBorderBox} from "../../components/IndividualPageContent/GradientBorderBox";
 
 function getAgeInSeconds(block: Types.Block): string {
   const blockTimestamp = parseTimestamp(block.block_timestamp);
@@ -151,21 +151,66 @@ export default function BlocksTable({
   columns = DEFAULT_COLUMNS,
 }: BlocksTableProps) {
   return (
-    <GradientBorderBox>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {columns.map((column) => (
-              <BlockHeaderCell key={column} column={column} />
-            ))}
-          </TableRow>
-        </TableHead>
-        <GeneralTableBody>
-          {blocks.map((block: any, i: number) => {
-            return <BlockRow key={i} block={block} columns={columns} />;
-          })}
-        </GeneralTableBody>
-      </Table>
-    </GradientBorderBox>
+    <TableGradientBorderBox>
+      <Box
+        sx={{
+          margin: "0 auto",
+          overflowX: "auto",
+          padding: "1px",
+          "&::-webkit-scrollbar": {
+            height: "6px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "rgba(255, 218, 52, 0.3)",
+            borderRadius: "3px",
+          },
+        }}
+      >
+        <Table
+          sx={{
+            tableLayout: "fixed",
+            "& td, & th": {
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              padding: "12px 16px",
+            },
+            // Desktop styles
+            "@media (min-width: 769px)": {
+              "& th:nth-of-type(2)": {
+                width: "60px",
+                minWidth: "60px",
+                maxWidth: "60px",
+              },
+              "& th:nth-of-type(6)": {
+                width: "30%",
+              },
+            },
+            "@media (max-width: 768px)": {
+              tableLayout: "auto",
+              "& td, & th": {
+                fontSize: "0.875rem",
+              },
+            },
+          }}
+        >
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <BlockHeaderCell key={column} column={column} />
+              ))}
+            </TableRow>
+          </TableHead>
+          <GeneralTableBody>
+            {blocks.map((block: any, i: number) => {
+              return <BlockRow key={i} block={block} columns={columns} />;
+            })}
+          </GeneralTableBody>
+        </Table>
+      </Box>
+    </TableGradientBorderBox>
   );
 }
