@@ -282,6 +282,21 @@ function RunContractForm({
 
   const fnParams = removeSignerParam(fn);
 
+  function bytesToVectorU8(hexString: string): string {
+    // Remove the "0x" prefix if present
+    if (hexString.startsWith("0x")) {
+      hexString = hexString.slice(2);
+    }
+
+    // Convert hex string to an array of numbers
+    const vectorU8: number[] = [];
+    for (let i = 0; i < hexString.length; i += 2) {
+      vectorU8.push(parseInt(hexString.substring(i, i + 2), 16));
+    }
+
+    return `${[vectorU8.join(", ")]}`;
+  }
+
   // TODO: We should use the SDKv2 for this
   const convertArgument = (
     arg: string | null | undefined,
@@ -296,8 +311,13 @@ function RunContractForm({
     if (typeTag.isVector()) {
       const innerTag = typeTag.value;
       if (innerTag.isVector()) {
-        // This must be JSON, let's parse it
-        return JSON.parse(arg) as any[];
+        console.log("arg format", arg);
+        if (arg.startsWith("[")) {
+          // This must be JSON, let's parse it
+          return JSON.parse(arg) as any[];
+        } else {
+          return JSON.parse(bytesToVectorU8(arg)) as any[];
+        }
       }
 
       if (innerTag.isU8()) {
@@ -744,7 +764,7 @@ function ContractForm({
                   render={({field: {onChange, value}}) => (
                     <TextField
                       onChange={onChange}
-                      value={isOption ? value : value ?? ""}
+                      value={isOption ? value : (value ?? "")}
                       label={`arg${i}: ${param}`}
                       fullWidth
                     />
